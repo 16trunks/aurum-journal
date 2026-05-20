@@ -229,6 +229,8 @@
   .detail-box .dvalue.green { color: var(--green); } .detail-box .dvalue.red { color: var(--red); } .detail-box .dvalue.gold { color: var(--gold2); }
   .trade-notes-display { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; font-size: 13px; color: var(--text2); line-height: 1.7; white-space: pre-wrap; }
   .delete-btn { background: rgba(255,77,106,0.08); border: 1px solid rgba(255,77,106,0.2); color: var(--red); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px; font-family: 'Space Mono', monospace; transition: all 0.2s; }
+  .edit-btn { background: rgba(180,140,50,0.08); border: 1px solid rgba(180,140,50,0.2); color: var(--gold2); padding: 6px 14px; border-radius: var(--radius); cursor: pointer; font-family: 'Space Mono', monospace; font-size: 11px; transition: all 0.2s; }
+  .edit-btn:hover { background: rgba(180,140,50,0.18); }
   .delete-btn:hover { background: rgba(255,77,106,0.18); }
 
   /* LIGHTBOX */
@@ -541,6 +543,7 @@
         </div>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
+        <button class="edit-btn" id="editToggleBtn" onclick="toggleEditMode()">✏️ Editar</button>
         <button class="delete-btn" onclick="deleteCurrentTrade()">Eliminar</button>
         <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('open')">✕</button>
       </div>
@@ -558,6 +561,75 @@
       <div style="margin-bottom:12px">
         <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px">EMOCIÓN · <span id="mEmotion" style="color:var(--gold2)">—</span></div>
         <div class="trade-notes-display" id="mNotes">Sin notas.</div>
+      </div>
+      <!-- EDIT PANEL -->
+      <div id="editPanel" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold2);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px">✏️ Editar Trade</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Par</div>
+            <select id="ePair" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif">
+              <option>XAU/USD</option><option>EUR/USD</option><option>GBP/USD</option><option>NAS100</option><option>US30</option><option>BTC/USD</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Fecha</div>
+            <input id="eDate" type="datetime-local" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:12px;font-family:'Space Mono',monospace">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Dirección</div>
+            <select id="eDirection" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif">
+              <option value="long">▲ LONG</option><option value="short">▼ SHORT</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Lotes</div>
+            <input id="eLots" type="number" step="0.01" placeholder="0.10" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Entrada</div>
+            <input id="eEntry" type="number" step="0.01" placeholder="2340.00" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px">
+          </div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Stop Loss</div>
+            <input id="eSL" type="number" step="0.01" placeholder="2330.00" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px">
+          </div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Take Profit</div>
+            <input id="eTP" type="number" step="0.01" placeholder="2360.00" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Resultado</div>
+            <select id="eResult" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif">
+              <option value="win">✓ WIN</option><option value="loss">✕ LOSS</option><option value="be">◎ B/E</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">P&L (USD)</div>
+            <input id="ePnl" type="number" step="0.01" placeholder="0.00" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px">
+          </div>
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Emoción</div>
+          <select id="eEmotion" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif">
+            <option value="neutro">😐 Neutro</option><option value="confiado">💪 Confiado</option>
+            <option value="ansioso">😰 Ansioso</option><option value="fomo">🚀 FOMO</option><option value="vengativo">😤 Vengativo</option>
+          </select>
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Notas</div>
+          <textarea id="eNotes" rows="3" placeholder="Setup, confluencias, errores..." style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;resize:vertical"></textarea>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="saveEditTrade()" style="flex:1;padding:10px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:var(--radius);color:#0d0f14;font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Guardar cambios</button>
+          <button onclick="toggleEditMode()" style="padding:10px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text2);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Cancelar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -580,6 +652,9 @@ window.previewShot = (...a) => window._previewShot?.(...a);
 window.saveTrade = () => window._saveTrade?.();
 window.changeMonth = (...a) => window._changeMonth?.(...a);
 window.calCurrentMonth = () => window._calCurrentMonth?.();
+window.calDayClick = (...a) => window._calDayClick?.(...a);
+window.saveEditTrade = () => window._saveEditTrade?.();
+window.toggleEditMode = () => window._toggleEditMode?.();
 window.setPeriod = (...a) => window._setPeriod?.(...a);
 window.openTradeModal = (...a) => window._openTradeModal?.(...a);
 window.closeModal = (...a) => window._closeModal?.(...a);
@@ -1076,6 +1151,119 @@ window._openTradeModal = (id) => {
   document.getElementById('modalOverlay').classList.add('open');
 };
 window._closeModal = (e) => { if(e.target===document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('open'); };
+
+// ── CALENDAR DAY CLICK — show trades list for that day ──
+window._calDayClick = (day) => {
+  const dayTrades = trades.filter(t => {
+    if (!t.date) return false;
+    const d = new Date(t.date);
+    return d.getFullYear()===calYear && d.getMonth()===calMonth && d.getDate()===day;
+  });
+  if (!dayTrades.length) return;
+  if (dayTrades.length === 1) {
+    window._openTradeModal(dayTrades[0].id);
+    return;
+  }
+  // Multiple trades: show picker overlay
+  const existing = document.getElementById('calDayPicker');
+  if (existing) existing.remove();
+  const emoIcons = {neutro:'😐',confiado:'💪',ansioso:'😰',fomo:'🚀',vengativo:'😤'};
+  const picker = document.createElement('div');
+  picker.id = 'calDayPicker';
+  picker.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:flex;align-items:center;justify-content:center';
+  picker.innerHTML = `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;min-width:320px;max-width:420px;width:90%">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:0.1em;text-transform:uppercase">Trades del día ${day}</div>
+      <button onclick="document.getElementById('calDayPicker').remove()" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer">✕</button>
+    </div>
+    ${dayTrades.map(t => {
+      const ps = t.pnl>=0?'+':''; const pc = t.pnl>0?'var(--green)':t.pnl<0?'var(--red)':'var(--text2)';
+      const time = t.date ? new Date(t.date).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'}) : '—';
+      return `<div onclick="document.getElementById('calDayPicker').remove();window._openTradeModal('${t.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:background 0.15s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:28px;height:28px;border-radius:4px;background:${t.direction==='long'?'rgba(0,200,122,0.1)':'rgba(232,75,90,0.1)'};border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--text2)">${t.direction==='long'?'L':'S'}</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--text)">${t.pair} <span style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3)">${emoIcons[t.emotion||'neutro']||''}</span></div>
+            <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text3)">${time}${t.rr?' · R:R 1:'+t.rr:''}</div>
+          </div>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:${pc}">${ps}$${Math.abs(t.pnl||0).toFixed(2)}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+  picker.addEventListener('click', e => { if (e.target===picker) picker.remove(); });
+  document.body.appendChild(picker);
+};
+
+// ── EDIT MODE TOGGLE ──
+window._toggleEditMode = window.toggleEditMode = () => {
+  const panel = document.getElementById('editPanel');
+  const btn = document.getElementById('editToggleBtn');
+  const isOpen = panel.style.display !== 'none';
+  if (isOpen) {
+    panel.style.display = 'none';
+    btn.textContent = '✏️ Editar';
+    return;
+  }
+  // Populate edit form with current trade data
+  const t = trades.find(x => x.id === currentTradeId);
+  if (!t) return;
+  document.getElementById('ePair').value = t.pair || 'XAU/USD';
+  document.getElementById('eDirection').value = t.direction || 'long';
+  document.getElementById('eEntry').value = t.entry || '';
+  document.getElementById('eSL').value = t.sl || '';
+  document.getElementById('eTP').value = t.tp || '';
+  document.getElementById('eLots').value = t.lots || '';
+  document.getElementById('eResult').value = t.result || 'win';
+  document.getElementById('ePnl').value = t.pnl || '';
+  document.getElementById('eEmotion').value = t.emotion || 'neutro';
+  document.getElementById('eNotes').value = t.notes || '';
+  if (t.date) {
+    // Convert to datetime-local format
+    const d = new Date(t.date);
+    const local = new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+    document.getElementById('eDate').value = local;
+  }
+  panel.style.display = 'block';
+  btn.textContent = '— Cerrar edición';
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+};
+
+// ── SAVE EDIT ──
+window._saveEditTrade = async () => {
+  if (!currentTradeId) return;
+  const entry = parseFloat(document.getElementById('eEntry').value)||null;
+  const sl = parseFloat(document.getElementById('eSL').value)||null;
+  const tp = parseFloat(document.getElementById('eTP').value)||null;
+  let rr = null;
+  if (entry&&sl&&tp) { const risk=Math.abs(entry-sl),reward=Math.abs(tp-entry); if(risk) rr=(reward/risk).toFixed(2); }
+  const dateVal = document.getElementById('eDate').value;
+  const updated = {
+    pair: document.getElementById('ePair').value,
+    direction: document.getElementById('eDirection').value,
+    date: dateVal ? new Date(dateVal).toISOString() : undefined,
+    entry, sl, tp, rr,
+    lots: parseFloat(document.getElementById('eLots').value)||null,
+    result: document.getElementById('eResult').value,
+    pnl: parseFloat(document.getElementById('ePnl').value)||0,
+    emotion: document.getElementById('eEmotion').value,
+    notes: document.getElementById('eNotes').value,
+  };
+  // Remove undefined keys
+  Object.keys(updated).forEach(k => updated[k]===undefined && delete updated[k]);
+  try {
+    setSyncStatus('syncing','Guardando...');
+    await updateDoc(doc(db,'trades',currentTradeId), updated);
+    // Refresh modal view
+    window._openTradeModal(currentTradeId);
+    document.getElementById('editPanel').style.display = 'none';
+    document.getElementById('editToggleBtn').textContent = '✏️ Editar';
+    setSyncStatus('online', `Sincronizado · ${trades.length} trades`);
+  } catch(err) {
+    alert('Error al guardar: '+err.message);
+    setSyncStatus('error','Error al guardar');
+  }
+};
 window._deleteCurrentTrade = async () => {
   if(!currentTradeId||!confirm('¿Eliminar este trade?')) return;
   setSyncStatus('syncing','Eliminando...');
