@@ -9,13 +9,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #080b0f; --surface: #0d1117; --surface2: #131920; --surface3: #1a2330;
-    --border: #1e2d3d; --border2: #243447;
-    --gold: #c9a84c; --gold2: #e8c96a; --gold-dim: rgba(201,168,76,0.12);
-    --green: #00d48a; --green-dim: rgba(0,212,138,0.1);
-    --red: #ff4d6a; --red-dim: rgba(255,77,106,0.1);
-    --text: #e2e8f0; --text2: #8a99ad; --text3: #4a5568;
-    --accent: #3d7eff; --radius: 8px; --radius-lg: 14px;
+    --bg: #080b0f; --surface: #0d1117; --surface2: #111620; --surface3: #161c28;
+    --border: #1a2030; --border2: #222c3a;
+    --gold: #b8963a; --gold2: #d4a843; --gold-dim: rgba(180,140,50,0.10);
+    --green: #00c87a; --green-dim: rgba(0,200,122,0.08);
+    --red: #e84b5a; --red-dim: rgba(232,75,90,0.08);
+    --text: #ccd2dc; --text2: #72808f; --text3: #3e4a58;
+    --accent: #d4a843;
+    --radius: 6px; --radius-lg: 10px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; overflow-x: hidden; }
@@ -61,7 +62,7 @@
   .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
   .stat-card.gold::before { background: linear-gradient(90deg, var(--gold), transparent); }
   .stat-card.green::before { background: linear-gradient(90deg, var(--green), transparent); }
-  .stat-card.blue::before { background: linear-gradient(90deg, var(--accent), transparent); }
+  .stat-card.blue::before { background: linear-gradient(90deg, var(--gold), transparent); }
   .stat-card.neutral::before { background: linear-gradient(90deg, var(--text2), transparent); }
   .stat-label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; }
   .stat-value { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
@@ -90,7 +91,7 @@
   .result-btn { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; transition: all 0.2s; border: none; background: var(--surface2); color: var(--text3); }
   .result-btn.win.active { background: var(--green-dim); color: var(--green); }
   .result-btn.loss.active { background: var(--red-dim); color: var(--red); }
-  .result-btn.be.active { background: rgba(61,126,255,0.1); color: var(--accent); }
+  .result-btn.be.active { background: rgba(61,126,255,0.1); color: var(--gold2); }
 
   /* EMOTION TOGGLE */
   .emotion-toggle { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -129,10 +130,10 @@
   .trade-meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text2); margin-top: 3px; }
   .trade-pnl { text-align: right; }
   .trade-pnl .amount { font-size: 16px; font-weight: 800; font-family: 'Space Mono', monospace; }
-  .trade-pnl .amount.win { color: var(--green); } .trade-pnl .amount.loss { color: var(--red); } .trade-pnl .amount.be { color: var(--accent); }
+  .trade-pnl .amount.win { color: var(--green); } .trade-pnl .amount.loss { color: var(--red); } .trade-pnl .amount.be { color: var(--gold2); }
   .trade-pnl .rr { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 3px; }
   .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-family: 'Space Mono', monospace; font-weight: 700; letter-spacing: 0.08em; }
-  .tag.win { background: var(--green-dim); color: var(--green); } .tag.loss { background: var(--red-dim); color: var(--red); } .tag.be { background: rgba(61,126,255,0.1); color: var(--accent); }
+  .tag.win { background: var(--green-dim); color: var(--green); } .tag.loss { background: var(--red-dim); color: var(--red); } .tag.be { background: rgba(61,126,255,0.1); color: var(--gold2); }
   .empty-state { padding: 60px 24px; text-align: center; }
   .empty-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.3; }
   .empty-text { color: var(--text3); font-size: 13px; font-family: 'Space Mono', monospace; line-height: 1.7; }
@@ -317,7 +318,7 @@
     <div class="stat-card neutral"><div class="stat-label">Total Trades</div><div class="stat-value" id="statTotal" style="color:var(--text)">0</div></div>
     <div class="stat-card green"><div class="stat-label">Win Rate</div><div class="stat-value green" id="statWR">—</div></div>
     <div class="stat-card gold"><div class="stat-label">Profit Total</div><div class="stat-value gold" id="statPnl">$0.00</div></div>
-    <div class="stat-card blue"><div class="stat-label">Avg R:R</div><div class="stat-value" id="statRR" style="color:var(--accent)">—</div></div>
+    <div class="stat-card blue"><div class="stat-label">Avg R:R</div><div class="stat-value" id="statRR" style="color:var(--gold2)">—</div></div>
     <div class="stat-card green"><div class="stat-label">Mejor Trade</div><div class="stat-value green" id="statBest">—</div></div>
   </div>
 
@@ -808,7 +809,6 @@ function renderCalendar() {
   const startDow = (firstDay.getDay()+6)%7; // Mon=0
   const today = new Date();
 
-  // Group trades by date
   const byDate = {};
   trades.forEach(t => {
     if (!t.date) return;
@@ -820,10 +820,12 @@ function renderCalendar() {
     }
   });
 
-  // Empty cells before first day
   for (let i=0; i<startDow; i++) grid.innerHTML += `<div class="cal-day empty"></div>`;
 
   let greenDays=0, redDays=0, monthPnl=0, daysWithTrades=0;
+  const weeks = [];
+  let wk = {pnl:0, tradeDays:0};
+  let col = startDow;
 
   for (let d=1; d<=lastDay.getDate(); d++) {
     const dayTrades = byDate[d] || [];
@@ -831,10 +833,45 @@ function renderCalendar() {
     const isToday = today.getDate()===d && today.getMonth()===calMonth && today.getFullYear()===calYear;
     let cls = 'cal-day';
     if (isToday) cls += ' today';
-    if (dayTrades.length) { cls += dayPnl>=0?' green-day':' red-day'; if(dayTrades.length) daysWithTrades++; if(dayPnl>0) greenDays++; else if(dayPnl<0) redDays++; monthPnl+=dayPnl; cls += ' has-trades'; }
-    const pnlHtml = dayTrades.length ? `<div class="cal-day-pnl ${dayPnl>=0?'pos':'neg'}">${dayPnl>=0?'+':''}$${Math.abs(dayPnl).toFixed(0)}</div><div class="cal-day-count">${dayTrades.length} trade${dayTrades.length>1?'s':''}</div>` : '';
-    grid.innerHTML += `<div class="${cls}"><div class="cal-day-num">${d}</div>${pnlHtml}</div>`;
+    if (dayTrades.length) {
+      cls += dayPnl>=0?' green-day':' red-day';
+      daysWithTrades++; monthPnl+=dayPnl;
+      if(dayPnl>0) greenDays++; else if(dayPnl<0) redDays++;
+      cls += ' has-trades';
+      wk.tradeDays++;
+    }
+    wk.pnl += dayPnl;
+    col++;
+    if (col===7 || d===lastDay.getDate()) {
+      weeks.push({...wk, label:`Week ${weeks.length+1}`});
+      wk = {pnl:0, tradeDays:0};
+      col = 0;
+    }
+    const pnlHtml = dayTrades.length
+      ? `<div class="cal-day-pnl ${dayPnl>=0?'pos':'neg'}">${dayPnl>=0?'+':''}$${Math.abs(dayPnl).toFixed(2)}</div><div class="cal-day-meta">${dayTrades.length} trade${dayTrades.length>1?'s':''}</div>`
+      : '';
+    grid.innerHTML += `<div class="${cls}" ${dayTrades.length?`onclick="calDayClick(${d})"`:''}>
+      <div class="cal-day-num">${d}</div>${pnlHtml}</div>`;
   }
+
+  // Weekly sidebar
+  const weeksEl = document.getElementById('calWeeks');
+  if (weeksEl) {
+    weeksEl.innerHTML = weeks.map(w => {
+      const pos = w.pnl >= 0;
+      return `<div class="cal-week-row" style="${w.tradeDays===0?'opacity:0.3':''}">
+        <div class="cal-week-label">${w.label}</div>
+        <div class="cal-week-pnl ${pos?'pos':'neg'}">${w.tradeDays>0?(pos?'+':'')+'$'+Math.abs(w.pnl).toFixed(2):'—'}</div>
+        <div class="cal-week-days">${w.tradeDays} day${w.tradeDays!==1?'s':''}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Header badges
+  const mpBadge = document.getElementById('calMonthPnlBadge');
+  if (mpBadge) { mpBadge.textContent=(monthPnl>=0?'+':'')+'$'+Math.abs(monthPnl).toFixed(2); mpBadge.style.color=monthPnl>=0?'var(--green)':'var(--red)'; }
+  const daysBadge = document.getElementById('calDaysBadge');
+  if (daysBadge) daysBadge.textContent = daysWithTrades+' day'+(daysWithTrades!==1?'s':'');
 
   document.getElementById('calDayCount').textContent = daysWithTrades;
   document.getElementById('calGreenDays').textContent = greenDays;
