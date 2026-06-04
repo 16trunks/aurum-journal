@@ -9,18 +9,29 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #0b0f12; --surface: #12171c; --surface2: #161b21; --surface3: #1a2028;
-    --border: #1e252b; --border2: #252d36;
-    --gold: #c8833a; --gold2: #f0a85d; --gold-dim: rgba(240,168,93,0.10);
-    --green: #00c87a; --green-dim: rgba(0,200,122,0.08);
-    --red: #e84b5a; --red-dim: rgba(232,75,90,0.08);
-    --text: #ffffff; --text2: #8a96a3; --text3: #3e4a58;
+    --bg: #050505;
+    --surface: #0a0a0a;
+    --surface2: #111111;
+    --surface3: #181818;
+    --border: #222222;
+    --border2: #333333;
+    --gold: #d4954e;
+    --gold2: #f0a85d;
+    --gold-dim: rgba(240,168,93,0.12);
+    --green: #00d48a;
+    --green-dim: rgba(0,212,138,0.12);
+    --red: #ff4d6a;
+    --red-dim: rgba(255,77,106,0.12);
+    --text: #f0f0f0;
+    --text2: #a0a0a0;
+    --text3: #666666;
     --accent: #f0a85d;
-    --radius: 6px; --radius-lg: 10px;
+    --radius: 6px;
+    --radius-lg: 10px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; overflow-x: hidden; }
-  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(240,168,93,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(240,168,93,0.015) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
   .wrap { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 0 24px 60px; }
 
   /* SYNC BAR */
@@ -35,15 +46,15 @@
   /* HEADER */
   header { display: flex; align-items: center; justify-content: space-between; padding: 28px 0 24px; border-bottom: 1px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
   .logo { display: flex; align-items: center; gap: 12px; }
-  .logo-icon { width: 38px; height: 38px; background: linear-gradient(135deg, var(--gold), var(--gold2)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 0 20px rgba(201,168,76,0.3); }
+  .logo-icon { width: 38px; height: 38px; background: linear-gradient(135deg, var(--gold), var(--gold2)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 0 20px rgba(240,168,93,0.3); }
   .logo h1 { font-size: 20px; font-weight: 800; letter-spacing: 0.15em; color: var(--gold2); }
   .logo span { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text2); letter-spacing: 0.2em; display: block; margin-top: 1px; }
   .header-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .btn { padding: 9px 18px; border-radius: var(--radius); border: none; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; transition: all 0.2s; letter-spacing: 0.05em; }
   .btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
   .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
-  .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold2)); color: #000; font-weight: 700; box-shadow: 0 4px 14px rgba(201,168,76,0.25); }
-  .btn-gold:hover { box-shadow: 0 4px 22px rgba(201,168,76,0.45); transform: translateY(-1px); }
+  .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold2)); color: #000; font-weight: 700; box-shadow: 0 4px 14px rgba(240,168,93,0.25); }
+  .btn-gold:hover { box-shadow: 0 4px 22px rgba(240,168,93,0.45); transform: translateY(-1px); }
   .import-zone { padding: 8px 14px; border-radius: var(--radius); border: 1px solid var(--border2); color: var(--text2); display: flex; align-items: center; gap: 6px; cursor: pointer; position: relative; transition: all 0.2s; font-size: 11px; font-family: 'Space Mono', monospace; white-space: nowrap; }
   .import-zone:hover { border-color: var(--gold); color: var(--gold); }
   .import-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
@@ -80,7 +91,7 @@
   .form-group.full { grid-column: 1 / -1; }
   label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text2); letter-spacing: 0.1em; text-transform: uppercase; }
   input, textarea, select { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: 'Space Mono', monospace; font-size: 13px; padding: 10px 14px; transition: border-color 0.2s, box-shadow 0.2s; outline: none; width: 100%; }
-  input:focus, textarea:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.08); }
+  input:focus, textarea:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
   select option { background: var(--surface2); }
   textarea { resize: vertical; min-height: 90px; font-size: 12px; line-height: 1.6; }
   .dir-toggle { display: flex; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
@@ -91,7 +102,7 @@
   .result-btn { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; transition: all 0.2s; border: none; background: var(--surface2); color: var(--text3); }
   .result-btn.win.active { background: var(--green-dim); color: var(--green); }
   .result-btn.loss.active { background: var(--red-dim); color: var(--red); }
-  .result-btn.be.active { background: rgba(61,126,255,0.1); color: var(--gold2); }
+  .result-btn.be.active { background: var(--gold-dim); color: var(--gold2); }
 
   /* EMOTION TOGGLE */
   .emotion-toggle { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -104,7 +115,7 @@
   .screenshot-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; padding: 0; border: none; }
   .screenshot-zone .hint { font-size: 11px; color: var(--text2); font-family: 'Space Mono', monospace; }
   .screenshot-preview { max-width: 100%; max-height: 200px; border-radius: 6px; object-fit: cover; display: none; }
-  .rr-display { background: var(--gold-dim); border: 1px solid rgba(201,168,76,0.25); border-radius: var(--radius); padding: 10px 14px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--gold2); text-align: center; letter-spacing: 0.05em; }
+  .rr-display { background: var(--gold-dim); border: 1px solid rgba(240,168,93,0.25); border-radius: var(--radius); padding: 10px 14px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--gold2); text-align: center; letter-spacing: 0.05em; }
   .form-divider { grid-column: 1 / -1; border: none; border-top: 1px solid var(--border); margin: 4px 0; }
   .upload-progress { display: none; background: var(--surface3); border-radius: var(--radius); padding: 8px 12px; font-family: 'Space Mono', monospace; font-size: 11px; color: var(--gold2); text-align: center; }
   .upload-progress.show { display: block; }
@@ -133,7 +144,7 @@
   .trade-pnl .amount.win { color: var(--green); } .trade-pnl .amount.loss { color: var(--red); } .trade-pnl .amount.be { color: var(--gold2); }
   .trade-pnl .rr { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 3px; }
   .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-family: 'Space Mono', monospace; font-weight: 700; letter-spacing: 0.08em; }
-  .tag.win { background: var(--green-dim); color: var(--green); } .tag.loss { background: var(--red-dim); color: var(--red); } .tag.be { background: rgba(61,126,255,0.1); color: var(--gold2); }
+  .tag.win { background: var(--green-dim); color: var(--green); } .tag.loss { background: var(--red-dim); color: var(--red); } .tag.be { background: var(--gold-dim); color: var(--gold2); }
   .empty-state { padding: 60px 24px; text-align: center; }
   .empty-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.3; }
   .empty-text { color: var(--text3); font-size: 13px; font-family: 'Space Mono', monospace; line-height: 1.7; }
@@ -159,8 +170,8 @@
   .cal-day.has-trades:hover { border-color: var(--border2); background: var(--surface3); }
   .cal-day.empty { background: transparent; }
   .cal-day.today { border-color: var(--gold) !important; }
-  .cal-day.green-day { background: rgba(0,212,138,0.1); border-color: rgba(0,212,138,0.3) !important; }
-  .cal-day.red-day { background: rgba(255,77,106,0.1); border-color: rgba(255,77,106,0.3) !important; }
+  .cal-day.green-day { background: var(--green-dim); border-color: rgba(0,212,138,0.3) !important; }
+  .cal-day.red-day { background: var(--red-dim); border-color: rgba(255,77,106,0.3) !important; }
   .cal-day-num { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text3); }
   .cal-day.today .cal-day-num { color: var(--gold2); font-weight: 700; }
   .cal-day-icon { position: absolute; top: 6px; right: 6px; font-size: 10px; opacity: 0.6; }
@@ -213,7 +224,7 @@
   .discipline-item .di-val { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; }
 
   /* MODAL */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
   .modal-overlay.open { display: flex; }
   .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-lg); width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; animation: modalIn 0.2s ease; }
   @keyframes modalIn { from { opacity: 0; transform: scale(0.97) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
@@ -229,8 +240,8 @@
   .detail-box .dvalue.green { color: var(--green); } .detail-box .dvalue.red { color: var(--red); } .detail-box .dvalue.gold { color: var(--gold2); }
   .trade-notes-display { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; font-size: 13px; color: var(--text2); line-height: 1.7; white-space: pre-wrap; }
   .delete-btn { background: rgba(255,77,106,0.08); border: 1px solid rgba(255,77,106,0.2); color: var(--red); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px; font-family: 'Space Mono', monospace; transition: all 0.2s; }
-  .edit-btn { background: rgba(180,140,50,0.08); border: 1px solid rgba(180,140,50,0.2); color: var(--gold2); padding: 6px 14px; border-radius: var(--radius); cursor: pointer; font-family: 'Space Mono', monospace; font-size: 11px; transition: all 0.2s; }
-  .edit-btn:hover { background: rgba(180,140,50,0.18); }
+  .edit-btn { background: rgba(212,149,78,0.08); border: 1px solid rgba(212,149,78,0.2); color: var(--gold2); padding: 6px 14px; border-radius: var(--radius); cursor: pointer; font-family: 'Space Mono', monospace; font-size: 11px; transition: all 0.2s; }
+  .edit-btn:hover { background: rgba(212,149,78,0.18); }
   .delete-btn:hover { background: rgba(255,77,106,0.18); }
 
   /* LIGHTBOX */
@@ -373,47 +384,47 @@
               <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
             </div>
           </div>
-          <div class="form-group full" id="quant-section" style="background:#0b0f12;border:1px solid #1e252b;border-radius:10px;padding:20px;margin-top:4px;">
+          <div class="form-group full" id="quant-section" style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:4px;">
 
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
               <div style="display:flex;flex-direction:column;gap:6px;">
-                <label style="font-family:'Space Mono',monospace;font-size:10px;color:#f0a85d;letter-spacing:0.1em;text-transform:uppercase;">Tipo de Setup <span style="color:#e84b5a">*</span></label>
-                <select id="fSetupType" style="background:#12171c;border:1px solid #1e252b;border-radius:6px;color:#fff;font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;outline:none;transition:border-color 0.2s;">
+                <label style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;">Tipo de Setup <span style="color:var(--red)">*</span></label>
+                <select id="fSetupType" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;outline:none;transition:border-color 0.2s;">
                   <option value="">— Seleccionar —</option>
                   <option value="continuation">Continuación de Estructura</option>
                   <option value="reversal">Reversión pura tras barrido de liquidez</option>
                 </select>
               </div>
               <div style="display:flex;flex-direction:column;gap:6px;">
-                <label style="font-family:'Space Mono',monospace;font-size:10px;color:#f0a85d;letter-spacing:0.1em;text-transform:uppercase;">Gestión del SL <span style="color:#e84b5a">*</span></label>
-                <select id="fSlManagement" style="background:#12171c;border:1px solid #1e252b;border-radius:6px;color:#fff;font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;outline:none;transition:border-color 0.2s;">
+                <label style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;">Gestión del SL <span style="color:var(--red)">*</span></label>
+                <select id="fSlManagement" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;outline:none;transition:border-color 0.2s;">
                   <option value="">— Seleccionar —</option>
-                  <option value="full">Full SL Respetado</option>
-                  <option value="technical">SL Mitigado Técnicamente</option>
-                  <option value="emotional">Breakeven Emocional/Prematuro</option>
+                  <option value="full">Full SL respetado</option>
+                  <option value="be_key_zone">SL a BE por Key Zone</option>
+                  <option value="emociones">SL Movido por Emociones</option>
                 </select>
               </div>
             </div>
 
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
               <div style="display:flex;flex-direction:column;gap:6px;">
-                <label style="font-family:'Space Mono',monospace;font-size:10px;color:#f0a85d;letter-spacing:0.1em;text-transform:uppercase;">MAE <span style="color:#8a96a3;font-size:9px;text-transform:none;letter-spacing:0">Max Adverse Excursion (pips)</span></label>
-                <input type="number" id="fMae" step="0.01" min="0" placeholder="0.00" oninput="calcEfficiency()" style="background:#12171c;border:1px solid #1e252b;border-radius:6px;color:#fff;font-family:'Space Mono',monospace;font-size:13px;padding:9px 12px;outline:none;width:100%;transition:border-color 0.2s;">
+                <label style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;">MAE <span style="color:var(--text3);font-size:9px;text-transform:none;letter-spacing:0">Max Adverse Excursion (pips)</span></label>
+                <input type="number" id="fMae" step="0.01" min="0" placeholder="0.00" oninput="calcEfficiency()" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:9px 12px;outline:none;width:100%;transition:border-color 0.2s;">
               </div>
               <div style="display:flex;flex-direction:column;gap:6px;">
-                <label style="font-family:'Space Mono',monospace;font-size:10px;color:#f0a85d;letter-spacing:0.1em;text-transform:uppercase;">MFE <span style="color:#8a96a3;font-size:9px;text-transform:none;letter-spacing:0">Max Favorable Excursion (pips)</span></label>
-                <input type="number" id="fMfe" step="0.01" min="0" placeholder="0.00" oninput="calcEfficiency()" style="background:#12171c;border:1px solid #1e252b;border-radius:6px;color:#fff;font-family:'Space Mono',monospace;font-size:13px;padding:9px 12px;outline:none;width:100%;transition:border-color 0.2s;">
+                <label style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;">MFE <span style="color:var(--text3);font-size:9px;text-transform:none;letter-spacing:0">Max Favorable Excursion (pips)</span></label>
+                <input type="number" id="fMfe" step="0.01" min="0" placeholder="0.00" oninput="calcEfficiency()" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:9px 12px;outline:none;width:100%;transition:border-color 0.2s;">
               </div>
             </div>
 
-            <div id="efficiencyDisplay" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#12171c;border:1px solid #1e252b;border-radius:6px;margin-bottom:20px;">
-              <span style="font-family:'Space Mono',monospace;font-size:10px;color:#8a96a3;text-transform:uppercase;letter-spacing:0.1em;flex:1;">Eficiencia del trade</span>
-              <span id="effBadge" style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:3px 8px;border-radius:3px;background:rgba(240,168,93,0.12);color:#f0a85d;">—</span>
-              <span id="effRatio" style="font-family:'Space Mono',monospace;font-size:12px;color:#8a96a3;">—</span>
+            <div id="efficiencyDisplay" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;margin-bottom:20px;">
+              <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;flex:1;">Eficiencia del trade</span>
+              <span id="effBadge" style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:3px 8px;border-radius:3px;background:var(--gold-dim);color:var(--gold);">—</span>
+              <span id="effRatio" style="font-family:'Space Mono',monospace;font-size:12px;color:var(--text3);">—</span>
             </div>
 
-            <div style="border-top:1px solid #1e252b;padding-top:16px;">
-              <div style="font-family:'Space Mono',monospace;font-size:9px;color:#f0a85d;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:14px;">Recap Cualitativo</div>
+            <div style="border-top:1px solid var(--border);padding-top:16px;">
+              <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:14px;">Recap Cualitativo</div>
               <div id="qualGrid" style="display:flex;flex-direction:column;gap:12px;"></div>
             </div>
           </div>
@@ -568,7 +579,7 @@
       </div>
       <div style="margin-bottom:12px">
         <div id="mQuantGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px"></div>
-        <div class="trade-notes-display" id="mNotes" style="white-space:pre-wrap;font-size:12px;line-height:1.8;">Sin notas.</div>
+        <div class="trade-notes-display" id="mNotes" style="font-size:12px;line-height:1.8;">Sin notas.</div>
       </div>
       <div id="editPanel" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
         <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold2);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px">✏️ Editar Trade</div>
@@ -622,9 +633,33 @@
             <input id="ePnl" type="number" step="0.01" placeholder="0.00" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px">
           </div>
         </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Tipo de Setup</div>
+            <select id="eSetupType" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif">
+              <option value="">—</option><option value="continuation">Continuación</option><option value="reversal">Reversión</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Gestión SL</div>
+            <select id="eSlManagement" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif">
+              <option value="">—</option><option value="full">Full SL respetado</option><option value="be_key_zone">SL a BE por Key Zone</option><option value="emociones">SL Movido por Emociones</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">MAE</div>
+            <input id="eMae" type="number" step="0.01" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px">
+          </div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">MFE</div>
+            <input id="eMfe" type="number" step="0.01" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px">
+          </div>
+        </div>
         <div style="margin-bottom:14px">
-          <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Setup / Notas</div>
-          <textarea id="eNotes" rows="3" placeholder="Setup, confluencias, errores..." style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;resize:vertical"></textarea>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Apuntes Históricos (Notas)</div>
+          <textarea id="eNotes" rows="4" placeholder="Apuntes / Journaling..." style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;resize:vertical"></textarea>
         </div>
         <div style="display:flex;gap:8px">
           <button onclick="saveEditTrade()" style="flex:1;padding:10px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:var(--radius);color:#0d0f14;font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Guardar cambios</button>
@@ -1006,11 +1041,11 @@ function renderEquity() {
       datasets: [{
         label: 'Portfolio Equity',
         data,
-        borderColor: isPositive ? '#7ecb6f' : '#ff4d6a',
+        borderColor: isPositive ? '#00d48a' : '#ff4d6a',
         borderWidth: 1.5,
         pointRadius: 0,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: isPositive ? '#7ecb6f' : '#ff4d6a',
+        pointHoverBackgroundColor: isPositive ? '#00d48a' : '#ff4d6a',
         tension: 0.3,
         fill: true,
         backgroundColor: (ctx2) => {
@@ -1019,11 +1054,10 @@ function renderEquity() {
           if (!chartArea) return 'transparent';
           const grad = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
           if (isPositive) {
-            grad.addColorStop(0, 'rgba(200,210,120,0.55)');
-            grad.addColorStop(0.5, 'rgba(150,210,100,0.30)');
-            grad.addColorStop(1, 'rgba(80,200,80,0.05)');
+            grad.addColorStop(0, 'rgba(0,212,138,0.25)');
+            grad.addColorStop(1, 'rgba(0,212,138,0.02)');
           } else {
-            grad.addColorStop(0, 'rgba(255,77,106,0.35)');
+            grad.addColorStop(0, 'rgba(255,77,106,0.25)');
             grad.addColorStop(1, 'rgba(255,77,106,0.02)');
           }
           return grad;
@@ -1036,11 +1070,11 @@ function renderEquity() {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#0d1117',
-          borderColor: '#2a3344',
+          backgroundColor: '#0a0a0a',
+          borderColor: '#222222',
           borderWidth: 1,
-          titleColor: '#8a99ad',
-          bodyColor: '#e2e8f0',
+          titleColor: '#a0a0a0',
+          bodyColor: '#f0f0f0',
           titleFont: { family: 'Space Mono', size: 10 },
           bodyFont: { family: 'Space Mono', size: 11 },
           callbacks: {
@@ -1050,11 +1084,11 @@ function renderEquity() {
         }
       },
       scales: {
-        x: { ticks: { color: '#4a5568', font: { family: 'Space Mono', size: 10 }, maxTicksLimit: 10 }, grid: { color: '#141c28' } },
+        x: { ticks: { color: '#666666', font: { family: 'Space Mono', size: 10 }, maxTicksLimit: 10 }, grid: { color: '#111111' } },
         y: {
           position: 'right',
-          ticks: { color: '#4a5568', font: { family: 'Space Mono', size: 10 }, callback: v => '$'+v.toLocaleString() },
-          grid: { color: '#141c28' }
+          ticks: { color: '#666666', font: { family: 'Space Mono', size: 10 }, callback: v => '$'+v.toLocaleString() },
+          grid: { color: '#111111' }
         }
       }
     }
@@ -1172,12 +1206,12 @@ window._openTradeModal = (id) => {
   // Quant grid in modal
   const qg=document.getElementById('mQuantGrid');
   if(qg){
-    const slLabels={full:'Full SL Respetado',technical:'SL Mitigado Técn.',emotional:'BE Emocional'};
+    const slLabels={full:'Full SL Respetado',be_key_zone:'SL a BE por Key Zone',emociones:'SL Movido por Emociones'};
     const setupLabels={continuation:'Continuación',reversal:'Reversión'};
     qg.innerHTML=[
       {l:'Setup',v:setupLabels[t.setupType]||t.setupType||'—'},
       {l:'Gestión SL',v:slLabels[t.slManagement]||t.slManagement||'—'},
-      {l:'MAE / MFE',v:t.mae!=null?`${t.mae} / ${t.mfe||0}`:'—'},
+      {l:'MAE / MFE',v:(t.mae!=null||t.mfe!=null)?`${t.mae||0} / ${t.mfe||0}`:'—'},
     ].map(x=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px"><div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">${x.l}</div><div style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--gold2)">${x.v}</div></div>`).join('');
   }
   const pe=document.getElementById('mPnL');
@@ -1185,14 +1219,35 @@ window._openTradeModal = (id) => {
   pe.className='dvalue '+(t.pnl>0?'green':t.pnl<0?'red':'');
   const shot=document.getElementById('mScreenshot');
   if(t.screenshotBase64){shot.src=t.screenshotBase64;shot.style.display='block';}else{shot.style.display='none';}
+  
   // Build qualitative notes display
-  const qLabels=['Why long/short?','Entry/Stop/Target placement?','Followed trading plan?','Emotions before/during/after?','Price levels respected?','Confluences?','Session bias alignment?','Better setup available?','Lesson learned?'];
-  let notesHtml='';
+  const qLabels=[
+    'WHY DID I TAKE LONG OR SHORT?',
+    'WERE MY ENTRY, STOP, AND TARGET WELL-PLACED BASED ON STRUCTURE AND LIQUIDITY?',
+    'DID I FOLLOW MY TRADING PLAN AND RULES? IF NOT, WHY?',
+    'WHAT WERE MY EMOTIONS BEFORE, DURING, AND AFTER THE TRADE AND DID I RUSH?',
+    'WHAT LEVELS DID PRICE RESPECT AND WAS IT THE LEVELS I HAD MARKED OUT?',
+    'WHAT CONFLUENCES DID I ENTER OFF OF?',
+    'DID THE TRADE ALIGN WITH THE SESSION BIAS AND MARKET STRUCTURE?',
+    'IF THERE WAS A BETTER SETUP, HOW COULD I HAVE SPOTTED THIS TRADE AND TAKEN IT?',
+    'WHAT\'S ONE THING I LEARNED OR WANT TO DO BETTER IN THE NEXT SESSION?'
+  ];
+  let notesContent='';
+  
+  // Historical journaling (notes) implementation
+  if (t.notes && t.notes.trim() !== '') {
+    notesContent += `<div style="color:var(--gold2);font-family:'Space Mono',monospace;font-size:10px;margin-top:12px;margin-bottom:6px;letter-spacing:0.1em;font-weight:700;text-transform:uppercase;">APUNTES HISTÓRICOS (JOURNALING)</div><div style="color:var(--text2);font-size:13px;margin-bottom:20px;padding:12px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);">${t.notes}</div>`;
+  }
+  
   if(t.qualitative){
     const qIds=['fQ1','fQ2','fQ3','fQ4','fQ5','fQ6','fQ7','fQ8','fQ9'];
-    notesHtml=qIds.map((id,i)=>{const v=t.qualitative[id];return v?`<b style="color:var(--gold2);font-size:9px">${String(i+1).padStart(2,'0')}. ${qLabels[i]}</b>\n${v}\n`:'';}).filter(Boolean).join('\n');
+    notesContent += qIds.map((id,i)=>{
+      const v=t.qualitative[id];
+      return v ? `<div style="color:var(--gold2);font-family:'Space Mono',monospace;font-size:10px;margin-top:12px;margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;">${qLabels[i]}</div><div style="color:var(--text2);font-size:13px;margin-bottom:16px;">${v}</div>`:'';
+    }).filter(Boolean).join('');
   }
-  document.getElementById('mNotes').textContent=notesHtml||'Sin notas.'  ;
+  document.getElementById('mNotes').innerHTML = notesContent || 'Sin notas ni registros.';
+  
   document.getElementById('modalOverlay').classList.add('open');
 };
 window._closeModal = (e) => { if(e.target===document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('open'); };
@@ -1226,7 +1281,7 @@ window._calDayClick = (day) => {
       const time = t.date ? new Date(t.date).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'}) : '—';
       return `<div onclick="document.getElementById('calDayPicker').remove();window._openTradeModal('${t.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:background 0.15s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
         <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:28px;height:28px;border-radius:4px;background:${t.direction==='long'?'rgba(0,200,122,0.1)':'rgba(232,75,90,0.1)'};border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--text2)">${t.direction==='long'?'L':'S'}</div>
+          <div style="width:28px;height:28px;border-radius:4px;background:${t.direction==='long'?'var(--green-dim)':'var(--red-dim)'};border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--text2)">${t.direction==='long'?'L':'S'}</div>
           <div>
             <div style="font-size:13px;font-weight:600;color:var(--text)">${t.pair} <span style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3)">${emoIcons[t.emotion||'neutro']||''}</span></div>
             <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text3)">${time}${t.rr?' · R:R 1:'+t.rr:''}</div>
@@ -1261,7 +1316,12 @@ window._toggleEditMode = window.toggleEditMode = () => {
   document.getElementById('eLots').value = t.lots || '';
   document.getElementById('eResult').value = t.result || 'win';
   document.getElementById('ePnl').value = t.pnl || '';
-  document.getElementById('eEmotion').value = t.emotion || 'neutro';
+  
+  if (document.getElementById('eSetupType')) document.getElementById('eSetupType').value = t.setupType || '';
+  if (document.getElementById('eSlManagement')) document.getElementById('eSlManagement').value = t.slManagement || '';
+  if (document.getElementById('eMae')) document.getElementById('eMae').value = t.mae || '';
+  if (document.getElementById('eMfe')) document.getElementById('eMfe').value = t.mfe || '';
+  
   document.getElementById('eNotes').value = t.notes || '';
   if (t.date) {
     // Convert to datetime-local format
@@ -1291,6 +1351,10 @@ window._saveEditTrade = async () => {
     lots: parseFloat(document.getElementById('eLots').value)||null,
     result: document.getElementById('eResult').value,
     pnl: parseFloat(document.getElementById('ePnl').value)||0,
+    setupType: document.getElementById('eSetupType').value,
+    slManagement: document.getElementById('eSlManagement').value,
+    mae: parseFloat(document.getElementById('eMae').value)||null,
+    mfe: parseFloat(document.getElementById('eMfe').value)||null,
     notes: document.getElementById('eNotes').value,
   };
   // Remove undefined keys
@@ -1298,6 +1362,9 @@ window._saveEditTrade = async () => {
   try {
     setSyncStatus('syncing','Guardando...');
     await updateDoc(doc(db,'trades',currentTradeId), updated);
+    // Optimistic UI update
+    const localT = trades.find(x => x.id === currentTradeId);
+    if (localT) Object.assign(localT, updated);
     // Refresh modal view
     window._openTradeModal(currentTradeId);
     document.getElementById('editPanel').style.display = 'none';
@@ -1344,7 +1411,8 @@ window._importCSV = (event) => {
   const file=event.target.files[0]; if(!file) return;
   const reader=new FileReader();
   reader.onload=async e=>{
-    const lines=e.target.result.split('\n').filter(l=>l.trim()); let imported=0;
+    const lines=e.target.result.split('
+').filter(l=>l.trim()); let imported=0;
     for(let i=1;i<lines.length;i++){
       const cols=lines[i].split(',').map(c=>c.trim().replace(/"/g,''));
       if(cols.length<8) continue;
@@ -1369,49 +1437,49 @@ window._calcEfficiency = window.calcEfficiency = () => {
   const badge = document.getElementById('effBadge');
   const ratio = document.getElementById('effRatio');
   if (!badge||!ratio) return;
-  if (!mfe) { badge.textContent='—'; badge.style.background='rgba(240,168,93,0.12)'; badge.style.color='#f0a85d'; ratio.textContent='—'; return; }
+  if (!mfe) { badge.textContent='—'; badge.style.background='var(--gold-dim)'; badge.style.color='var(--gold)'; ratio.textContent='—'; return; }
   const pct = mae>0 ? ((mfe/(mfe+mae))*100).toFixed(1) : 100;
   const r   = mae>0 ? (mfe/mae).toFixed(2) : '∞';
   badge.textContent = pct+'% EFF';
   ratio.textContent = 'MFE/MAE '+r+':1';
-  if (pct>=70) { badge.style.background='rgba(0,200,122,0.12)'; badge.style.color='#00c87a'; }
-  else if (pct>=40) { badge.style.background='rgba(240,168,93,0.12)'; badge.style.color='#f0a85d'; }
-  else { badge.style.background='rgba(232,75,90,0.12)'; badge.style.color='#e84b5a'; }
+  if (pct>=70) { badge.style.background='var(--green-dim)'; badge.style.color='var(--green)'; }
+  else if (pct>=40) { badge.style.background='var(--gold-dim)'; badge.style.color='var(--gold)'; }
+  else { badge.style.background='var(--red-dim)'; badge.style.color='var(--red)'; }
 };
 
 window.resetEfficiency = () => {
   const badge = document.getElementById('effBadge');
   const ratio = document.getElementById('effRatio');
-  if (badge) { badge.textContent='—'; badge.style.background='rgba(240,168,93,0.12)'; badge.style.color='#f0a85d'; }
+  if (badge) { badge.textContent='—'; badge.style.background='var(--gold-dim)'; badge.style.color='var(--gold)'; }
   if (ratio) ratio.textContent='—';
 };
 
 // ── BUILD QUALITATIVE QUESTIONS ──
 (function buildQualGrid() {
   const questions = [
-    '01. WHY DID I TAKE LONG OR SHORT?',
-    '02. WERE MY ENTRY, STOP, AND TARGET WELL-PLACED BASED ON STRUCTURE AND LIQUIDITY?',
-    '03. DID I FOLLOW MY TRADING PLAN AND RULES? IF NOT, WHY?',
-    '04. WHAT WERE MY EMOTIONS BEFORE, DURING, AND AFTER THE TRADE AND DID I RUSH?',
-    '05. WHAT LEVELS DID PRICE RESPECT AND WAS IT THE LEVELS I HAD MARKED OUT?',
-    '06. WHAT CONFLUENCES DID I ENTER OFF OF?',
-    '07. DID THE TRADE ALIGN WITH THE SESSION BIAS AND MARKET STRUCTURE?',
-    '08. IF THERE WAS A BETTER SETUP, HOW COULD I HAVE SPOTTED THIS TRADE AND TAKEN IT?',
-    '09. WHAT\'S ONE THING I LEARNED OR WANT TO DO BETTER IN THE NEXT SESSION?',
+    'WHY DID I TAKE LONG OR SHORT?',
+    'WERE MY ENTRY, STOP, AND TARGET WELL-PLACED BASED ON STRUCTURE AND LIQUIDITY?',
+    'DID I FOLLOW MY TRADING PLAN AND RULES? IF NOT, WHY?',
+    'WHAT WERE MY EMOTIONS BEFORE, DURING, AND AFTER THE TRADE AND DID I RUSH?',
+    'WHAT LEVELS DID PRICE RESPECT AND WAS IT THE LEVELS I HAD MARKED OUT?',
+    'WHAT CONFLUENCES DID I ENTER OFF OF?',
+    'DID THE TRADE ALIGN WITH THE SESSION BIAS AND MARKET STRUCTURE?',
+    'IF THERE WAS A BETTER SETUP, HOW COULD I HAVE SPOTTED THIS TRADE AND TAKEN IT?',
+    'WHAT\'S ONE THING I LEARNED OR WANT TO DO BETTER IN THE NEXT SESSION?'
   ];
   function build() {
     const grid = document.getElementById('qualGrid');
     if (!grid) return;
     grid.innerHTML = questions.map((q,i) => `
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <label for="fQ${i+1}" style="font-family:'Space Mono',monospace;font-size:10px;color:#f0a85d;letter-spacing:0.06em;text-transform:uppercase;">${q} <span style="color:#e84b5a">*</span></label>
-        <textarea id="fQ${i+1}" rows="3" placeholder="..." style="background:#12171c;border:1px solid #1e252b;border-radius:6px;color:#fff;font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;outline:none;resize:vertical;min-height:70px;width:100%;line-height:1.6;transition:border-color 0.2s;"></textarea>
+        <label for="fQ${i+1}" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:0.06em;text-transform:uppercase;">${q} <span style="color:var(--red)">*</span></label>
+        <textarea id="fQ${i+1}" rows="3" placeholder="..." style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;outline:none;resize:vertical;min-height:70px;width:100%;line-height:1.6;transition:border-color 0.2s;"></textarea>
       </div>
     `).join('');
     // Focus style for textareas
     grid.querySelectorAll('textarea').forEach(ta => {
-      ta.addEventListener('focus', () => ta.style.borderColor='#f0a85d');
-      ta.addEventListener('blur',  () => ta.style.borderColor='#1e252b');
+      ta.addEventListener('focus', () => ta.style.borderColor='var(--gold)');
+      ta.addEventListener('blur',  () => ta.style.borderColor='var(--border)');
     });
   }
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', build);
