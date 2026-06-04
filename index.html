@@ -667,7 +667,7 @@ window.importCSV = (...a) => window._importCSV?.(...a);
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -1378,5 +1378,370 @@ function renderAnalytics() {
   }
 }
 </script>
+
+<!-- ══════════════════════════════════════════════════════════════
+     AURUM EXTENSION — Módulo de métricas cuantitativas, cualitativas y multimedia
+     Integrado inline (no requiere archivo externo)
+     ══════════════════════════════════════════════════════════════ -->
+<script>
+(function AurumExtension() {
+
+  var CSS = `
+    :root {
+      --ae-bg-card:      #111214;
+      --ae-bg-input:     #1a1c1f;
+      --ae-bg-section:   #16181b;
+      --ae-border:       #2a2d31;
+      --ae-text:         #d4d6db;
+      --ae-text-muted:   #6b7280;
+      --ae-text-label:   #9ca3af;
+      --ae-green:        #22c55e;
+      --ae-green-dim:    rgba(34,197,94,0.12);
+      --ae-red:          #dc2626;
+      --ae-red-dim:      rgba(220,38,38,0.12);
+      --ae-gold:         #d97706;
+      --ae-gold-dim:     rgba(217,119,6,0.12);
+      --ae-radius:       6px;
+      --ae-radius-lg:    10px;
+      --ae-font:         'Space Mono', monospace;
+      --ae-font-sans:    'Syne', system-ui, sans-serif;
+    }
+    #ae-module { font-family: var(--ae-font-sans); margin-top: 24px; border-top: 1px solid var(--ae-border); padding-top: 24px; }
+    .ae-section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .ae-section-header span { font-family: var(--ae-font); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ae-text-muted); }
+    .ae-section-header::before { content: ''; display: block; width: 3px; height: 14px; border-radius: 2px; background: var(--ae-gold); }
+    .ae-section-header::after { content: ''; flex: 1; height: 1px; background: var(--ae-border); }
+    .ae-card { background: var(--ae-bg-card); border: 1px solid var(--ae-border); border-radius: var(--ae-radius-lg); padding: 20px; margin-bottom: 16px; }
+    .ae-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 640px) { .ae-grid-2 { grid-template-columns: 1fr; } }
+    .ae-field { display: flex; flex-direction: column; gap: 6px; }
+    .ae-label { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ae-text-label); }
+    .ae-hint { font-size: 10px; color: var(--ae-text-muted); text-transform: none; letter-spacing: 0; margin-left: 6px; font-weight: 400; }
+    .ae-input, .ae-select, .ae-textarea {
+      background: var(--ae-bg-input); border: 1px solid var(--ae-border); border-radius: var(--ae-radius);
+      color: var(--ae-text); font-family: var(--ae-font-sans); font-size: 13px; padding: 9px 12px;
+      width: 100%; box-sizing: border-box; transition: border-color 0.15s; outline: none; -webkit-appearance: none; appearance: none;
+    }
+    .ae-input:focus, .ae-select:focus, .ae-textarea:focus { border-color: var(--ae-gold); background: #1e2024; }
+    .ae-select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 32px; }
+    .ae-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+    .ae-metric-display { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding: 12px 14px; background: var(--ae-bg-section); border: 1px solid var(--ae-border); border-radius: var(--ae-radius); }
+    .ae-metric-label { font-family: var(--ae-font); font-size: 10px; color: var(--ae-text-muted); text-transform: uppercase; letter-spacing: 0.1em; flex: 1; }
+    .ae-metric-value { font-family: var(--ae-font); font-size: 13px; font-weight: 600; }
+    .ae-metric-value.positive { color: var(--ae-green); }
+    .ae-metric-value.negative { color: var(--ae-red); }
+    .ae-metric-value.neutral  { color: var(--ae-text-muted); }
+    .ae-efficiency-badge { font-family: var(--ae-font); font-size: 11px; padding: 3px 8px; border-radius: 3px; font-weight: 700; }
+    .ae-eff-good  { background: var(--ae-green-dim); color: var(--ae-green); }
+    .ae-eff-mid   { background: var(--ae-gold-dim);  color: var(--ae-gold); }
+    .ae-eff-poor  { background: var(--ae-red-dim);   color: var(--ae-red); }
+    .ae-q-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .ae-q-label { font-size: 12px; font-weight: 500; color: var(--ae-text); line-height: 1.4; margin-bottom: 4px; }
+    .ae-q-num { font-family: var(--ae-font); font-size: 10px; color: var(--ae-gold); margin-right: 6px; }
+    .ae-upload-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    @media (max-width: 640px) { .ae-upload-grid { grid-template-columns: 1fr; } }
+    .ae-upload-zone { position: relative; border: 1px dashed var(--ae-border); border-radius: var(--ae-radius); padding: 16px 12px; text-align: center; cursor: pointer; transition: border-color 0.15s, background 0.15s; background: var(--ae-bg-input); }
+    .ae-upload-zone:hover, .ae-upload-zone.dragover { border-color: var(--ae-gold); background: var(--ae-gold-dim); }
+    .ae-upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .ae-upload-icon { font-size: 22px; color: var(--ae-text-muted); margin-bottom: 6px; }
+    .ae-upload-title { font-size: 11px; font-weight: 600; color: var(--ae-text-label); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+    .ae-upload-hint { font-size: 10px; color: var(--ae-text-muted); }
+    .ae-upload-preview { margin-top: 8px; border-radius: 4px; overflow: hidden; max-height: 100px; display: none; }
+    .ae-upload-preview img { width: 100%; height: 100px; object-fit: cover; }
+    .ae-upload-preview.has-image { display: block; }
+    .ae-divider { height: 1px; background: var(--ae-border); margin: 20px 0; }
+    .ae-save-flash { position: fixed; bottom: 24px; right: 24px; background: var(--ae-green-dim); border: 1px solid var(--ae-green); color: var(--ae-green); font-family: var(--ae-font); font-size: 11px; padding: 8px 16px; border-radius: var(--ae-radius); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 9999; letter-spacing: 0.08em; }
+    .ae-save-flash.show { opacity: 1; }
+  `;
+
+  var HTML = `
+  <div id="ae-module">
+    <div class="ae-section-header"><span>Metricas cuantitativas</span></div>
+    <div class="ae-card">
+      <div class="ae-grid-2">
+        <div class="ae-field">
+          <label class="ae-label" for="ae-setup-type">Tipo de Setup <span style="color:var(--ae-red)">*</span></label>
+          <select id="ae-setup-type" class="ae-select">
+            <option value="">— Seleccionar —</option>
+            <option value="continuation">Continuacion de Estructura</option>
+            <option value="reversal">Reversion pura tras barrido de liquidez</option>
+          </select>
+        </div>
+        <div class="ae-field">
+          <label class="ae-label" for="ae-sl-management">Gestion del Stop Loss <span style="color:var(--ae-red)">*</span></label>
+          <select id="ae-sl-management" class="ae-select">
+            <option value="">— Seleccionar —</option>
+            <option value="full">Full SL Respetado</option>
+            <option value="technical">SL Mitigado Tecnicamente</option>
+            <option value="emotional">Breakeven Emocional/Prematuro</option>
+          </select>
+        </div>
+      </div>
+      <div class="ae-divider"></div>
+      <div class="ae-grid-2">
+        <div class="ae-field">
+          <label class="ae-label" for="ae-mae">MAE — Max Adverse Excursion <span class="ae-hint">pips / precio</span></label>
+          <input id="ae-mae" type="number" step="0.01" min="0" placeholder="0.00" class="ae-input" />
+        </div>
+        <div class="ae-field">
+          <label class="ae-label" for="ae-mfe">MFE — Max Favorable Excursion <span class="ae-hint">pips / precio</span></label>
+          <input id="ae-mfe" type="number" step="0.01" min="0" placeholder="0.00" class="ae-input" />
+        </div>
+      </div>
+      <div class="ae-metric-display" id="ae-efficiency-display">
+        <span class="ae-metric-label">Eficiencia del trade</span>
+        <span class="ae-efficiency-badge ae-eff-mid" id="ae-efficiency-badge">—</span>
+        <span class="ae-metric-value neutral" id="ae-efficiency-val">—</span>
+      </div>
+    </div>
+
+    <div class="ae-section-header"><span>Recap cualitativo</span></div>
+    <div class="ae-card">
+      <div class="ae-q-grid" id="ae-qualitative-grid"></div>
+    </div>
+
+    <div class="ae-section-header"><span>Multimedia &amp; destacados</span></div>
+    <div class="ae-card">
+      <div class="ae-upload-grid">
+        <div class="ae-field">
+          <label class="ae-label">Trade tomado #1</label>
+          <div class="ae-upload-zone" id="ae-zone-t1">
+            <input type="file" id="ae-img-t1" accept="image/*" data-target="t1" />
+            <div class="ae-upload-icon">📸</div>
+            <div class="ae-upload-title">Screenshot</div>
+            <div class="ae-upload-hint">click o arrastra</div>
+            <div class="ae-upload-preview" id="ae-prev-t1"><img id="ae-prev-img-t1" src="" alt="Trade 1" /></div>
+          </div>
+        </div>
+        <div class="ae-field">
+          <label class="ae-label">Trade tomado #2</label>
+          <div class="ae-upload-zone" id="ae-zone-t2">
+            <input type="file" id="ae-img-t2" accept="image/*" data-target="t2" />
+            <div class="ae-upload-icon">📸</div>
+            <div class="ae-upload-title">Screenshot</div>
+            <div class="ae-upload-hint">click o arrastra</div>
+            <div class="ae-upload-preview" id="ae-prev-t2"><img id="ae-prev-img-t2" src="" alt="Trade 2" /></div>
+          </div>
+        </div>
+        <div class="ae-field">
+          <label class="ae-label" style="color: var(--ae-gold);">⭐ Best trade of the day</label>
+          <div class="ae-upload-zone" id="ae-zone-best" style="border-color: var(--ae-gold);">
+            <input type="file" id="ae-img-best" accept="image/*" data-target="best" />
+            <div class="ae-upload-icon">🏆</div>
+            <div class="ae-upload-title" style="color: var(--ae-gold);">Best setup</div>
+            <div class="ae-upload-hint">click o arrastra</div>
+            <div class="ae-upload-preview" id="ae-prev-best"><img id="ae-prev-img-best" src="" alt="Best trade" /></div>
+          </div>
+        </div>
+      </div>
+      <div class="ae-field" style="margin-top: 14px;">
+        <label class="ae-label" for="ae-best-note">Nota sobre el best trade del dia</label>
+        <textarea id="ae-best-note" class="ae-textarea" placeholder="¿Por que fue el mejor setup? ¿Que lo hizo ideal?" rows="3"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="ae-save-flash" id="ae-save-flash">✓ DATOS GUARDADOS</div>
+  `;
+
+  var QUALITATIVE_QUESTIONS = [
+    { id: "ae-q-direction",   label: "Why did I take long or short?" },
+    { id: "ae-q-placement",   label: "Were my entry, stop, and target well-placed based on structure and liquidity?" },
+    { id: "ae-q-plan",        label: "Did I follow my trading plan and rules? If not, why?" },
+    { id: "ae-q-emotions",    label: "What were my emotions before, during, and after the trade and did I rush?" },
+    { id: "ae-q-levels",      label: "What levels did price respect and was it the levels I had marked out?" },
+    { id: "ae-q-confluences", label: "What confluences did I enter off of?" },
+    { id: "ae-q-bias",        label: "Did the trade align with the session bias and market structure?" },
+    { id: "ae-q-bettersetup", label: "If there was a better setup, how could I have spotted this trade and taken it?" },
+    { id: "ae-q-learned",     label: "What's one thing I learned or want to do better in the next session?" },
+  ];
+
+  function calcTradeEfficiency(entry, mae, mfe) {
+    if (!mfe || mfe === 0) return { ratio: null, pct: null, label: "Sin datos", cssClass: "ae-eff-mid" };
+    var ratio = mae > 0 ? parseFloat((mfe / mae).toFixed(2)) : null;
+    var pct   = mae > 0 ? parseFloat(((mfe / (mfe + mae)) * 100).toFixed(1)) : 100;
+    var label, cssClass;
+    if (pct >= 70)      { label = pct + "% EFF"; cssClass = "ae-eff-good"; }
+    else if (pct >= 40) { label = pct + "% EFF"; cssClass = "ae-eff-mid"; }
+    else                { label = pct + "% EFF"; cssClass = "ae-eff-poor"; }
+    return { ratio: ratio, pct: pct, label: label, cssClass: cssClass };
+  }
+
+  function collectAEData() {
+    var qualitative = {};
+    QUALITATIVE_QUESTIONS.forEach(function(q) {
+      var el = document.getElementById(q.id);
+      qualitative[q.id] = el ? el.value.trim() : "";
+    });
+    var mae   = parseFloat((document.getElementById("ae-mae") || {}).value) || 0;
+    var mfe   = parseFloat((document.getElementById("ae-mfe") || {}).value) || 0;
+    var entry = parseFloat((document.getElementById("fEntry") || {}).value || 0);
+    var efficiency = calcTradeEfficiency(entry, mae, mfe);
+    return {
+      setupType:    (document.getElementById("ae-setup-type") || {}).value || "",
+      slManagement: (document.getElementById("ae-sl-management") || {}).value || "",
+      mae: mae, mfe: mfe, efficiency: efficiency, qualitative: qualitative,
+      bestNote: ((document.getElementById("ae-best-note") || {}).value || "").trim(),
+      images: {
+        t1:   (window._aeImages || {}).t1   || null,
+        t2:   (window._aeImages || {}).t2   || null,
+        best: (window._aeImages || {}).best || null,
+      },
+    };
+  }
+
+  function saveAEData(tradeId) {
+    var aeData = collectAEData();
+    var key    = "ae_trade_" + (tradeId || Date.now());
+    try { localStorage.setItem(key, JSON.stringify(aeData)); showSaveFlash(); }
+    catch (err) { console.error("[AurumExtension] Error guardando datos:", err); }
+    return { key: key, aeData: aeData };
+  }
+
+  function loadAEData(tradeId) {
+    try { var raw = localStorage.getItem("ae_trade_" + tradeId); return raw ? JSON.parse(raw) : null; }
+    catch(e) { return null; }
+  }
+
+  function populateAEForm(data) {
+    if (!data) return;
+    setVal("ae-setup-type",    data.setupType);
+    setVal("ae-sl-management", data.slManagement);
+    setVal("ae-mae",           data.mae);
+    setVal("ae-mfe",           data.mfe);
+    setVal("ae-best-note",     data.bestNote);
+    if (data.qualitative) Object.entries(data.qualitative).forEach(function(kv) { setVal(kv[0], kv[1]); });
+  }
+
+  function setVal(id, val) {
+    var el = document.getElementById(id);
+    if (el && val !== undefined && val !== null) el.value = val;
+  }
+
+  function showSaveFlash() {
+    var el = document.getElementById("ae-save-flash");
+    if (!el) return;
+    el.classList.add("show");
+    setTimeout(function() { el.classList.remove("show"); }, 2000);
+  }
+
+  function updateEfficiencyDisplay() {
+    var mae   = parseFloat((document.getElementById("ae-mae") || {}).value) || 0;
+    var mfe   = parseFloat((document.getElementById("ae-mfe") || {}).value) || 0;
+    var entry = parseFloat((document.getElementById("fEntry") || {}).value || 0);
+    var eff   = calcTradeEfficiency(entry, mae, mfe);
+    var badge = document.getElementById("ae-efficiency-badge");
+    var valEl = document.getElementById("ae-efficiency-val");
+    if (badge && valEl) {
+      badge.textContent = eff.label;
+      badge.className   = "ae-efficiency-badge " + eff.cssClass;
+      valEl.textContent = eff.ratio !== null ? "MFE/MAE " + eff.ratio + ":1" : "—";
+      valEl.className   = "ae-metric-value " + (eff.pct >= 60 ? "positive" : eff.pct >= 40 ? "neutral" : "negative");
+    }
+  }
+
+  window._aeImages = { t1: null, t2: null, best: null };
+
+  function handleImageUpload(inputEl) {
+    var file   = inputEl.files[0];
+    var target = inputEl.dataset.target;
+    if (!file || !target) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var b64 = e.target.result;
+      window._aeImages[target] = b64;
+      var prev    = document.getElementById("ae-prev-" + target);
+      var prevImg = document.getElementById("ae-prev-img-" + target);
+      if (prev && prevImg) { prevImg.src = b64; prev.classList.add("has-image"); }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function hookSaveButton() {
+    var saveBtn = document.getElementById("saveBtn");
+    if (saveBtn) {
+      saveBtn.addEventListener("click", function() { saveAEData("trade_" + Date.now()); }, true);
+      return;
+    }
+    var candidates = Array.from(document.querySelectorAll("button"))
+      .filter(function(b) { return /guardar|save|registrar|submit/i.test(b.textContent); });
+    candidates.forEach(function(btn) {
+      btn.addEventListener("click", function() { saveAEData("trade_" + Date.now()); }, true);
+    });
+  }
+
+  function buildQualitativeGrid() {
+    var grid = document.getElementById("ae-qualitative-grid");
+    if (!grid) return;
+    grid.innerHTML = QUALITATIVE_QUESTIONS.map(function(q, i) {
+      return '<div class="ae-field"><label class="ae-q-label" for="' + q.id + '">' +
+        '<span class="ae-q-num">' + String(i + 1).padStart(2, "0") + '.</span>' + q.label +
+        ' <span style="color: var(--ae-red); margin-left:3px;">*</span></label>' +
+        '<textarea id="' + q.id + '" class="ae-textarea" rows="3" placeholder="..."></textarea></div>';
+    }).join("");
+  }
+
+  function setupDragDrop(zoneId) {
+    var zone = document.getElementById(zoneId);
+    if (!zone) return;
+    zone.addEventListener("dragover",  function(e) { e.preventDefault(); zone.classList.add("dragover"); });
+    zone.addEventListener("dragleave", function()  { zone.classList.remove("dragover"); });
+    zone.addEventListener("drop",      function(e) {
+      e.preventDefault(); zone.classList.remove("dragover");
+      var input = zone.querySelector("input[type=file]");
+      if (input && e.dataTransfer.files.length) { input.files = e.dataTransfer.files; handleImageUpload(input); }
+    });
+  }
+
+  function mount() {
+    var style = document.createElement("style");
+    style.textContent = CSS;
+    document.head.appendChild(style);
+
+    var saveBtn = document.getElementById("saveBtn");
+    var wrapper = document.createElement("div");
+    wrapper.innerHTML = HTML;
+
+    if (saveBtn && saveBtn.closest(".form-group")) {
+      var formGroup = saveBtn.closest(".form-group");
+      formGroup.parentElement.insertBefore(wrapper, formGroup);
+    } else if (saveBtn && saveBtn.parentElement) {
+      saveBtn.parentElement.insertBefore(wrapper, saveBtn);
+    } else {
+      document.body.appendChild(wrapper);
+    }
+
+    buildQualitativeGrid();
+
+    ["ae-mae", "ae-mfe"].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener("input", updateEfficiencyDisplay);
+    });
+    ["ae-img-t1", "ae-img-t2", "ae-img-best"].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener("change", function(e) { handleImageUpload(e.target); });
+    });
+    ["ae-zone-t1", "ae-zone-t2", "ae-zone-best"].forEach(setupDragDrop);
+
+    hookSaveButton();
+    console.log("[AurumExtension] ✓ Modulo montado correctamente.");
+  }
+
+  window.AurumExtension = {
+    save:           saveAEData,
+    load:           loadAEData,
+    populate:       populateAEForm,
+    collect:        collectAEData,
+    calcEfficiency: calcTradeEfficiency,
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mount);
+  } else {
+    mount();
+  }
+
+})();
+</script>
+
 </body>
 </html>
