@@ -9,12 +9,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #050505;
-    --surface: #0a0a0a;
-    --surface2: #111111;
-    --surface3: #181818;
-    --border: #222222;
-    --border2: #333333;
+    --bg: #050608;
+    --surface: #0b0e14;
+    --surface2: #121721;
+    --surface3: #1a2230;
+    --border: #20293a;
+    --border2: #2d3b54;
     --gold: #d4954e;
     --gold2: #f0a85d;
     --gold-dim: rgba(240,168,93,0.12);
@@ -22,9 +22,9 @@
     --green-dim: rgba(0,212,138,0.12);
     --red: #ff4d6a;
     --red-dim: rgba(255,77,106,0.12);
-    --text: #f0f0f0;
-    --text2: #a0a0a0;
-    --text3: #666666;
+    --text: #f0f4f8;
+    --text2: #94a3b8;
+    --text3: #64748b;
     --accent: #f0a85d;
     --radius: 6px;
     --radius-lg: 10px;
@@ -384,7 +384,7 @@
               <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
             </div>
           </div>
-          <div class="form-group full" id="quant-section" style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:4px;">
+          <div class="form-group full" id="quant-section" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:4px;">
 
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
               <div style="display:flex;flex-direction:column;gap:6px;">
@@ -509,10 +509,6 @@
       </div>
     </div>
   </div>
-
-
-
-</div>
 
   <div class="tab-content" id="tab-analytics">
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
@@ -1127,7 +1123,7 @@ function renderEquity() {
 // ── EMOTIONS ──
 function renderEmotions() {
   const emoGridEl = document.getElementById('emoStatGrid');
-  if (!emoGridEl) return; // FIX: Esto evita que la aplicación entera falle si falta la pestaña de emociones.
+  if (!emoGridEl) return; 
 
   const emos = ['neutro','confiado','ansioso','fomo','vengativo'];
   const emoLabels = { neutro:'😐 Neutro', confiado:'💪 Confiado', ansioso:'😰 Ansioso', fomo:'🚀 FOMO', vengativo:'😤 Vengativo' };
@@ -1207,7 +1203,7 @@ window._openTradeModal = (id) => {
   const qg=document.getElementById('mQuantGrid');
   if(qg){
     const slLabels={full:'Full SL Respetado',be_key_zone:'SL a BE por Key Zone',emociones:'SL Movido por Emociones'};
-    const setupLabels={continuation:'Continuación',reversal:'Reversión'};
+    const setupLabels={continuation:'Continuación de Estructura',reversal:'Reversión'};
     qg.innerHTML=[
       {l:'Setup',v:setupLabels[t.setupType]||t.setupType||'—'},
       {l:'Gestión SL',v:slLabels[t.slManagement]||t.slManagement||'—'},
@@ -1220,23 +1216,23 @@ window._openTradeModal = (id) => {
   const shot=document.getElementById('mScreenshot');
   if(t.screenshotBase64){shot.src=t.screenshotBase64;shot.style.display='block';}else{shot.style.display='none';}
   
-  // Build qualitative notes display
+  // Limpieza de títulos de preguntas cualitativas
   const qLabels=[
-    'WHY DID I TAKE LONG OR SHORT?',
-    'WERE MY ENTRY, STOP, AND TARGET WELL-PLACED BASED ON STRUCTURE AND LIQUIDITY?',
-    'DID I FOLLOW MY TRADING PLAN AND RULES? IF NOT, WHY?',
-    'WHAT WERE MY EMOTIONS BEFORE, DURING, AND AFTER THE TRADE AND DID I RUSH?',
-    'WHAT LEVELS DID PRICE RESPECT AND WAS IT THE LEVELS I HAD MARKED OUT?',
-    'WHAT CONFLUENCES DID I ENTER OFF OF?',
-    'DID THE TRADE ALIGN WITH THE SESSION BIAS AND MARKET STRUCTURE?',
-    'IF THERE WAS A BETTER SETUP, HOW COULD I HAVE SPOTTED THIS TRADE AND TAKEN IT?',
-    'WHAT\'S ONE THING I LEARNED OR WANT TO DO BETTER IN THE NEXT SESSION?'
+    'Why did I take long or short?',
+    'Were my entry, stop, and target well-placed based on structure and liquidity?',
+    'Did I follow my trading plan and rules? If not, why?',
+    'What were my emotions before, during, and after the trade and did I rush?',
+    'What levels did price respect and was it the levels I had marked out?',
+    'What confluences did I enter off of?',
+    'Did the trade align with the session bias and market structure?',
+    'If there was a better setup, how could I have spotted this trade and taken it?',
+    'What\'s one thing I learned or want to do better in the next session?'
   ];
   let notesContent='';
   
-  // Historical journaling (notes) implementation
+  // Journaling Histórico (Notas Libres)
   if (t.notes && t.notes.trim() !== '') {
-    notesContent += `<div style="color:var(--gold2);font-family:'Space Mono',monospace;font-size:10px;margin-top:12px;margin-bottom:6px;letter-spacing:0.1em;font-weight:700;text-transform:uppercase;">APUNTES HISTÓRICOS (JOURNALING)</div><div style="color:var(--text2);font-size:13px;margin-bottom:20px;padding:12px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);">${t.notes}</div>`;
+    notesContent += `<div style="color:var(--gold2);font-family:'Space Mono',monospace;font-size:10px;margin-top:12px;margin-bottom:6px;letter-spacing:0.1em;font-weight:700;text-transform:uppercase;">APUNTES HISTÓRICOS (JOURNALING)</div><div style="color:var(--text2);font-size:13px;margin-bottom:20px;padding:12px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border);">${t.notes}</div>`;
   }
   
   if(t.qualitative){
@@ -1296,7 +1292,7 @@ window._calDayClick = (day) => {
 };
 
 // ── EDIT MODE TOGGLE ──
-window._toggleEditMode = window.toggleEditMode = () => {
+window._toggleEditMode = () => {
   const panel = document.getElementById('editPanel');
   const btn = document.getElementById('editToggleBtn');
   const isOpen = panel.style.display !== 'none';
@@ -1411,8 +1407,7 @@ window._importCSV = (event) => {
   const file=event.target.files[0]; if(!file) return;
   const reader=new FileReader();
   reader.onload=async e=>{
-    const lines=e.target.result.split('
-').filter(l=>l.trim()); let imported=0;
+    const lines=e.target.result.split('\n').filter(l=>l.trim()); let imported=0;
     for(let i=1;i<lines.length;i++){
       const cols=lines[i].split(',').map(c=>c.trim().replace(/"/g,''));
       if(cols.length<8) continue;
@@ -1428,7 +1423,6 @@ window._importCSV = (event) => {
   };
   reader.readAsText(file);
 };
-
 
 // ── EFFICIENCY CALCULATOR ──
 window._calcEfficiency = window.calcEfficiency = () => {
@@ -1457,15 +1451,15 @@ window.resetEfficiency = () => {
 // ── BUILD QUALITATIVE QUESTIONS ──
 (function buildQualGrid() {
   const questions = [
-    'WHY DID I TAKE LONG OR SHORT?',
-    'WERE MY ENTRY, STOP, AND TARGET WELL-PLACED BASED ON STRUCTURE AND LIQUIDITY?',
-    'DID I FOLLOW MY TRADING PLAN AND RULES? IF NOT, WHY?',
-    'WHAT WERE MY EMOTIONS BEFORE, DURING, AND AFTER THE TRADE AND DID I RUSH?',
-    'WHAT LEVELS DID PRICE RESPECT AND WAS IT THE LEVELS I HAD MARKED OUT?',
-    'WHAT CONFLUENCES DID I ENTER OFF OF?',
-    'DID THE TRADE ALIGN WITH THE SESSION BIAS AND MARKET STRUCTURE?',
-    'IF THERE WAS A BETTER SETUP, HOW COULD I HAVE SPOTTED THIS TRADE AND TAKEN IT?',
-    'WHAT\'S ONE THING I LEARNED OR WANT TO DO BETTER IN THE NEXT SESSION?'
+    'Why did I take long or short?',
+    'Were my entry, stop, and target well-placed based on structure and liquidity?',
+    'Did I follow my trading plan and rules? If not, why?',
+    'What were my emotions before, during, and after the trade and did I rush?',
+    'What levels did price respect and was it the levels I had marked out?',
+    'What confluences did I enter off of?',
+    'Did the trade align with the session bias and market structure?',
+    'If there was a better setup, how could I have spotted this trade and taken it?',
+    'What\'s one thing I learned or want to do better in the next session?'
   ];
   function build() {
     const grid = document.getElementById('qualGrid');
