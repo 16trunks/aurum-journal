@@ -9,13 +9,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #080b0f; --surface: #0d1117; --surface2: #111620; --surface3: #161c28;
-    --border: #1a2030; --border2: #222c3a;
-    --gold: #b8963a; --gold2: #d4a843; --gold-dim: rgba(180,140,50,0.10);
+    --bg: #0b0f12; --surface: #12171c; --surface2: #161b21; --surface3: #1a2028;
+    --border: #1e252b; --border2: #252d36;
+    --gold: #c8833a; --gold2: #f0a85d; --gold-dim: rgba(240,168,93,0.10);
     --green: #00c87a; --green-dim: rgba(0,200,122,0.08);
     --red: #e84b5a; --red-dim: rgba(232,75,90,0.08);
-    --text: #ccd2dc; --text2: #72808f; --text3: #3e4a58;
-    --accent: #d4a843;
+    --text: #ffffff; --text2: #8a96a3; --text3: #3e4a58;
+    --accent: #f0a85d;
     --radius: 6px; --radius-lg: 10px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -329,7 +329,6 @@
     <button class="tab-btn active" onclick="switchTab('journal',this)">📋 Journal</button>
     <button class="tab-btn" onclick="switchTab('calendar',this)">📅 Calendario</button>
     <button class="tab-btn" onclick="switchTab('equity',this)">📈 Equity</button>
-    <button class="tab-btn" onclick="switchTab('emotions',this)">🧠 Emociones</button>
         <button class="tab-btn" onclick="switchTab('analytics',this)">📊 Analytics</button>
   </div>
 
@@ -365,16 +364,6 @@
           </div>
           <div class="form-group full"><label>Profit / Pérdida (USD)</label><input type="number" id="fPnL" placeholder="Ej: 125.50 o -80.00" step="0.01"></div>
           <hr class="form-divider">
-          <div class="form-group full"><label>Estado Emocional</label>
-            <div class="emotion-toggle" id="emotionToggle">
-              <button class="emo-btn active" onclick="setEmotion('neutro',this)">😐 Neutro</button>
-              <button class="emo-btn" onclick="setEmotion('confiado',this)">💪 Confiado</button>
-              <button class="emo-btn" onclick="setEmotion('ansioso',this)">😰 Ansioso</button>
-              <button class="emo-btn" onclick="setEmotion('fomo',this)">🚀 FOMO</button>
-              <button class="emo-btn" onclick="setEmotion('vengativo',this)">😤 Vengativo</button>
-            </div>
-          </div>
-          <hr class="form-divider">
           <div class="form-group full">
             <label>Screenshot del Trade</label>
             <div class="screenshot-zone">
@@ -388,7 +377,55 @@
               <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
             </div>
           </div>
-          <div class="form-group full"><label>Análisis / Notas</label><textarea id="fNotes" placeholder="¿Por qué tomaste este trade? ¿Qué viste? Sesgo del día, confluencias, errores..."></textarea></div>
+          <!-- ── BITÁCORA CUANTITATIVA ── -->
+          <div class="form-group full" id="quant-section" style="background:#0b0f12;border:1px solid #1e252b;border-radius:10px;padding:20px;margin-top:4px;">
+
+            <!-- Fila dropdowns -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <label style="font-family:'Space Mono',monospace;font-size:10px;color:#f0a85d;letter-spacing:0.1em;text-transform:uppercase;">Tipo de Setup <span style="color:#e84b5a">*</span></label>
+                <select id="fSetupType" style="background:#12171c;border:1px solid #1e252b;border-radius:6px;color:#fff;font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;outline:none;transition:border-color 0.2s;">
+                  <option value="">— Seleccionar —</option>
+                  <option value="continuation">Continuación de Estructura</option>
+                  <option value="reversal">Reversión pura tras barrido de liquidez</option>
+                </select>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <label style="font-family:'Space Mono',monospace;font-size:10px;color:#f0a85d;letter-spacing:0.1em;text-transform:uppercase;">Gestión del SL <span style="color:#e84b5a">*</span></label>
+                <select id="fSlManagement" style="background:#12171c;border:1px solid #1e252b;border-radius:6px;color:#fff;font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;outline:none;transition:border-color 0.2s;">
+                  <option value="">— Seleccionar —</option>
+                  <option value="full">Full SL Respetado</option>
+                  <option value="technical">SL Mitigado Técnicamente</option>
+                  <option value="emotional">Breakeven Emocional/Prematuro</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- MAE / MFE -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <label style="font-family:'Space Mono',monospace;font-size:10px;color:#f0a85d;letter-spacing:0.1em;text-transform:uppercase;">MAE <span style="color:#8a96a3;font-size:9px;text-transform:none;letter-spacing:0">Max Adverse Excursion (pips)</span></label>
+                <input type="number" id="fMae" step="0.01" min="0" placeholder="0.00" oninput="calcEfficiency()" style="background:#12171c;border:1px solid #1e252b;border-radius:6px;color:#fff;font-family:'Space Mono',monospace;font-size:13px;padding:9px 12px;outline:none;width:100%;transition:border-color 0.2s;">
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <label style="font-family:'Space Mono',monospace;font-size:10px;color:#f0a85d;letter-spacing:0.1em;text-transform:uppercase;">MFE <span style="color:#8a96a3;font-size:9px;text-transform:none;letter-spacing:0">Max Favorable Excursion (pips)</span></label>
+                <input type="number" id="fMfe" step="0.01" min="0" placeholder="0.00" oninput="calcEfficiency()" style="background:#12171c;border:1px solid #1e252b;border-radius:6px;color:#fff;font-family:'Space Mono',monospace;font-size:13px;padding:9px 12px;outline:none;width:100%;transition:border-color 0.2s;">
+              </div>
+            </div>
+
+            <!-- Efficiency display -->
+            <div id="efficiencyDisplay" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#12171c;border:1px solid #1e252b;border-radius:6px;margin-bottom:20px;">
+              <span style="font-family:'Space Mono',monospace;font-size:10px;color:#8a96a3;text-transform:uppercase;letter-spacing:0.1em;flex:1;">Eficiencia del trade</span>
+              <span id="effBadge" style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:3px 8px;border-radius:3px;background:rgba(240,168,93,0.12);color:#f0a85d;">—</span>
+              <span id="effRatio" style="font-family:'Space Mono',monospace;font-size:12px;color:#8a96a3;">—</span>
+            </div>
+
+            <!-- Preguntas cualitativas -->
+            <div style="border-top:1px solid #1e252b;padding-top:16px;">
+              <div style="font-family:'Space Mono',monospace;font-size:9px;color:#f0a85d;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:14px;">Recap Cualitativo</div>
+              <div id="qualGrid" style="display:flex;flex-direction:column;gap:12px;"></div>
+            </div>
+          </div>
           <div class="form-group full">
             <button class="btn btn-gold" id="saveBtn" onclick="saveTrade()" style="width:100%; padding:13px; font-size:14px; letter-spacing:0.1em;">＋ GUARDAR TRADE</button>
           </div>
@@ -473,23 +510,7 @@
     </div>
   </div>
 
-  <!-- TAB: EMOCIONES -->
-  <div class="tab-content" id="tab-emotions">
-    <div class="emotions-section">
-      <div class="emo-card">
-        <div class="panel-title">Win Rate por Emoción</div>
-        <div class="emo-stat-grid" id="emoStatGrid"></div>
-      </div>
-      <div class="emo-card">
-        <div class="panel-title">Trades por Estado</div>
-        <div class="emo-chart-wrap"><canvas id="emoChart"></canvas></div>
-      </div>
-      <div class="emo-card" style="grid-column: 1 / -1">
-        <div class="panel-title">Análisis de Disciplina</div>
-        <div class="discipline-list" id="disciplineList"></div>
-      </div>
-    </div>
-  </div>
+
 
 </div>
 
@@ -559,8 +580,8 @@
         <div class="detail-box"><div class="dlabel">P&L</div><div class="dvalue" id="mPnL">—</div></div>
       </div>
       <div style="margin-bottom:12px">
-        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px">EMOCIÓN · <span id="mEmotion" style="color:var(--gold2)">—</span></div>
-        <div class="trade-notes-display" id="mNotes">Sin notas.</div>
+        <div id="mQuantGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px"></div>
+        <div class="trade-notes-display" id="mNotes" style="white-space:pre-wrap;font-size:12px;line-height:1.8;">Sin notas.</div>
       </div>
       <!-- EDIT PANEL -->
       <div id="editPanel" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
@@ -616,14 +637,7 @@
           </div>
         </div>
         <div style="margin-bottom:14px">
-          <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Emoción</div>
-          <select id="eEmotion" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif">
-            <option value="neutro">😐 Neutro</option><option value="confiado">💪 Confiado</option>
-            <option value="ansioso">😰 Ansioso</option><option value="fomo">🚀 FOMO</option><option value="vengativo">😤 Vengativo</option>
-          </select>
-        </div>
-        <div style="margin-bottom:14px">
-          <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Notas</div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Setup / Notas</div>
           <textarea id="eNotes" rows="3" placeholder="Setup, confluencias, errores..." style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;resize:vertical"></textarea>
         </div>
         <div style="display:flex;gap:8px">
@@ -664,6 +678,7 @@ window.openLightbox = (...a) => window._openLightbox?.(...a);
 window.exportJSON = () => window._exportJSON?.();
 window.importJSON = (...a) => window._importJSON?.(...a);
 window.importCSV = (...a) => window._importCSV?.(...a);
+window.calcEfficiency = () => window._calcEfficiency?.();
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -818,12 +833,30 @@ window._saveTrade = async () => {
   if (screenshotFile) { try { screenshotBase64 = await compressImage(screenshotFile); } catch(err) {} }
   try {
     setSyncStatus('syncing','Guardando...');
-    await addDoc(tradesCol, { pair:document.getElementById('fPair').value, date:document.getElementById('fDate').value, direction, entry:e, sl, tp, lots:parseFloat(document.getElementById('fLots').value)||null, pnl:parseFloat(document.getElementById('fPnL').value)||0, result, rr, emotion, screenshotBase64, notes:document.getElementById('fNotes').value, timestamp:Date.now() });
-    ['fEntry','fSL','fTP','fLots','fPnL','fNotes'].forEach(id=>document.getElementById(id).value='');
+    const qualData = {};
+    const qIds = ['fQ1','fQ2','fQ3','fQ4','fQ5','fQ6','fQ7','fQ8','fQ9'];
+    qIds.forEach(id => { const el=document.getElementById(id); qualData[id]=el?el.value.trim():''; });
+    await addDoc(tradesCol, {
+      pair:document.getElementById('fPair').value,
+      date:document.getElementById('fDate').value,
+      direction, entry:e, sl, tp,
+      lots:parseFloat(document.getElementById('fLots').value)||null,
+      pnl:parseFloat(document.getElementById('fPnL').value)||0,
+      result, rr,
+      screenshotBase64,
+      setupType: document.getElementById('fSetupType')?.value||'',
+      slManagement: document.getElementById('fSlManagement')?.value||'',
+      mae: parseFloat(document.getElementById('fMae')?.value)||null,
+      mfe: parseFloat(document.getElementById('fMfe')?.value)||null,
+      qualitative: qualData,
+      timestamp:Date.now()
+    });
+    ['fEntry','fSL','fTP','fLots','fPnL','fSetupType','fSlManagement','fMae','fMfe'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    qIds.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     screenshotFile=null;
     document.getElementById('shotPreview').style.display='none'; document.getElementById('shotIcon').style.display='block'; document.getElementById('shotHint').style.display='block';
     document.getElementById('rrDisplay').textContent='R:R — ingresa entrada, SL y TP para calcular';
-    setDir('long'); setResult('win'); setEmotion('neutro', document.querySelector('.emo-btn'));
+    setDir('long'); setResult('win'); document.getElementById('efficiencyDisplay') && resetEfficiency();
     btn.textContent='✓ GUARDADO'; btn.style.background='linear-gradient(135deg,var(--green),#00b87a)';
     setTimeout(()=>{ btn.textContent='＋ GUARDAR TRADE'; btn.style.background=''; btn.disabled=false; },2000);
   } catch(err) { alert('Error: '+err.message); btn.textContent='＋ GUARDAR TRADE'; btn.disabled=false; }
@@ -841,7 +874,7 @@ function renderList() {
     return `<li class="trade-item" onclick="openTradeModal('${t.id}')">
       <div class="trade-direction ${t.direction}">${t.direction==='long'?'L':'S'}</div>
       <div class="trade-info">
-        <div class="trade-pair">${t.pair} <span class="tag ${t.result}">${t.result.toUpperCase()}</span> ${t.emotion?`<span style="font-size:12px">${emoIcons[t.emotion]||''}</span>`:''}</div>
+        <div class="trade-pair">${t.pair} <span class="tag ${t.result}">${t.result.toUpperCase()}</span></div>
         <div class="trade-date">${ds}</div>
         <div class="trade-meta">Entry: ${t.entry}${t.rr?' · R:R 1:'+t.rr:''}</div>
       </div>
@@ -1141,13 +1174,30 @@ window._openTradeModal = (id) => {
   document.getElementById('mTP').textContent=t.tp||'—';
   document.getElementById('mLots').textContent=t.lots||'—';
   document.getElementById('mRR').textContent=t.rr?'1:'+t.rr:'—';
-  document.getElementById('mEmotion').textContent=emoLabels[t.emotion||'neutro']||'—';
+  // Quant grid in modal
+  const qg=document.getElementById('mQuantGrid');
+  if(qg){
+    const slLabels={full:'Full SL Respetado',technical:'SL Mitigado Técn.',emotional:'BE Emocional'};
+    const setupLabels={continuation:'Continuación',reversal:'Reversión'};
+    qg.innerHTML=[
+      {l:'Setup',v:setupLabels[t.setupType]||t.setupType||'—'},
+      {l:'Gestión SL',v:slLabels[t.slManagement]||t.slManagement||'—'},
+      {l:'MAE / MFE',v:t.mae!=null?`${t.mae} / ${t.mfe||0}`:'—'},
+    ].map(x=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px"><div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">${x.l}</div><div style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--gold2)">${x.v}</div></div>`).join('');
+  }
   const pe=document.getElementById('mPnL');
   pe.textContent=(t.pnl>=0?'+':'')+'$'+(t.pnl||0).toFixed(2);
   pe.className='dvalue '+(t.pnl>0?'green':t.pnl<0?'red':'');
   const shot=document.getElementById('mScreenshot');
   if(t.screenshotBase64){shot.src=t.screenshotBase64;shot.style.display='block';}else{shot.style.display='none';}
-  document.getElementById('mNotes').textContent=t.notes||'Sin notas.';
+  // Build qualitative notes display
+  const qLabels=['Why long/short?','Entry/Stop/Target placement?','Followed trading plan?','Emotions before/during/after?','Price levels respected?','Confluences?','Session bias alignment?','Better setup available?','Lesson learned?'];
+  let notesHtml='';
+  if(t.qualitative){
+    const qIds=['fQ1','fQ2','fQ3','fQ4','fQ5','fQ6','fQ7','fQ8','fQ9'];
+    notesHtml=qIds.map((id,i)=>{const v=t.qualitative[id];return v?`<b style="color:var(--gold2);font-size:9px">${String(i+1).padStart(2,'0')}. ${qLabels[i]}</b>\n${v}\n`:'';}).filter(Boolean).join('\n');
+  }
+  document.getElementById('mNotes').textContent=notesHtml||'Sin notas.'  ;
   document.getElementById('modalOverlay').classList.add('open');
 };
 window._closeModal = (e) => { if(e.target===document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('open'); };
@@ -1246,7 +1296,6 @@ window._saveEditTrade = async () => {
     lots: parseFloat(document.getElementById('eLots').value)||null,
     result: document.getElementById('eResult').value,
     pnl: parseFloat(document.getElementById('ePnl').value)||0,
-    emotion: document.getElementById('eEmotion').value,
     notes: document.getElementById('eNotes').value,
   };
   // Remove undefined keys
@@ -1317,6 +1366,63 @@ window._importCSV = (event) => {
   reader.readAsText(file);
 };
 
+
+// ── EFFICIENCY CALCULATOR ──
+window._calcEfficiency = window.calcEfficiency = () => {
+  const mae = parseFloat(document.getElementById('fMae')?.value)||0;
+  const mfe = parseFloat(document.getElementById('fMfe')?.value)||0;
+  const badge = document.getElementById('effBadge');
+  const ratio = document.getElementById('effRatio');
+  if (!badge||!ratio) return;
+  if (!mfe) { badge.textContent='—'; badge.style.background='rgba(240,168,93,0.12)'; badge.style.color='#f0a85d'; ratio.textContent='—'; return; }
+  const pct = mae>0 ? ((mfe/(mfe+mae))*100).toFixed(1) : 100;
+  const r   = mae>0 ? (mfe/mae).toFixed(2) : '∞';
+  badge.textContent = pct+'% EFF';
+  ratio.textContent = 'MFE/MAE '+r+':1';
+  if (pct>=70) { badge.style.background='rgba(0,200,122,0.12)'; badge.style.color='#00c87a'; }
+  else if (pct>=40) { badge.style.background='rgba(240,168,93,0.12)'; badge.style.color='#f0a85d'; }
+  else { badge.style.background='rgba(232,75,90,0.12)'; badge.style.color='#e84b5a'; }
+};
+
+window.resetEfficiency = () => {
+  const badge = document.getElementById('effBadge');
+  const ratio = document.getElementById('effRatio');
+  if (badge) { badge.textContent='—'; badge.style.background='rgba(240,168,93,0.12)'; badge.style.color='#f0a85d'; }
+  if (ratio) ratio.textContent='—';
+};
+
+// ── BUILD QUALITATIVE QUESTIONS ──
+(function buildQualGrid() {
+  const questions = [
+    '01. WHY DID I TAKE LONG OR SHORT?',
+    '02. WERE MY ENTRY, STOP, AND TARGET WELL-PLACED BASED ON STRUCTURE AND LIQUIDITY?',
+    '03. DID I FOLLOW MY TRADING PLAN AND RULES? IF NOT, WHY?',
+    '04. WHAT WERE MY EMOTIONS BEFORE, DURING, AND AFTER THE TRADE AND DID I RUSH?',
+    '05. WHAT LEVELS DID PRICE RESPECT AND WAS IT THE LEVELS I HAD MARKED OUT?',
+    '06. WHAT CONFLUENCES DID I ENTER OFF OF?',
+    '07. DID THE TRADE ALIGN WITH THE SESSION BIAS AND MARKET STRUCTURE?',
+    '08. IF THERE WAS A BETTER SETUP, HOW COULD I HAVE SPOTTED THIS TRADE AND TAKEN IT?',
+    '09. WHAT\'S ONE THING I LEARNED OR WANT TO DO BETTER IN THE NEXT SESSION?',
+  ];
+  function build() {
+    const grid = document.getElementById('qualGrid');
+    if (!grid) return;
+    grid.innerHTML = questions.map((q,i) => `
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <label for="fQ${i+1}" style="font-family:'Space Mono',monospace;font-size:10px;color:#f0a85d;letter-spacing:0.06em;text-transform:uppercase;">${q} <span style="color:#e84b5a">*</span></label>
+        <textarea id="fQ${i+1}" rows="3" placeholder="..." style="background:#12171c;border:1px solid #1e252b;border-radius:6px;color:#fff;font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;outline:none;resize:vertical;min-height:70px;width:100%;line-height:1.6;transition:border-color 0.2s;"></textarea>
+      </div>
+    `).join('');
+    // Focus style for textareas
+    grid.querySelectorAll('textarea').forEach(ta => {
+      ta.addEventListener('focus', () => ta.style.borderColor='#f0a85d');
+      ta.addEventListener('blur',  () => ta.style.borderColor='#1e252b');
+    });
+  }
+  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+
 // ── ANALYTICS ──
 function renderAnalytics() {
   if (!trades.length) return;
@@ -1377,370 +1483,6 @@ function renderAnalytics() {
     breakdown.innerHTML=items.map(i=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px"><div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">${i.label}</div><div style="font-size:18px;font-weight:800;color:${i.color};font-family:'Space Mono',monospace">${i.val}</div><div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);margin-top:4px">${i.sub}</div></div>`).join('');
   }
 }
-</script>
-
-<!-- ══════════════════════════════════════════════════════════════
-     AURUM EXTENSION — Módulo de métricas cuantitativas, cualitativas y multimedia
-     Integrado inline (no requiere archivo externo)
-     ══════════════════════════════════════════════════════════════ -->
-<script>
-(function AurumExtension() {
-
-  var CSS = `
-    :root {
-      --ae-bg-card:      #111214;
-      --ae-bg-input:     #1a1c1f;
-      --ae-bg-section:   #16181b;
-      --ae-border:       #2a2d31;
-      --ae-text:         #d4d6db;
-      --ae-text-muted:   #6b7280;
-      --ae-text-label:   #9ca3af;
-      --ae-green:        #22c55e;
-      --ae-green-dim:    rgba(34,197,94,0.12);
-      --ae-red:          #dc2626;
-      --ae-red-dim:      rgba(220,38,38,0.12);
-      --ae-gold:         #d97706;
-      --ae-gold-dim:     rgba(217,119,6,0.12);
-      --ae-radius:       6px;
-      --ae-radius-lg:    10px;
-      --ae-font:         'Space Mono', monospace;
-      --ae-font-sans:    'Syne', system-ui, sans-serif;
-    }
-    #ae-module { font-family: var(--ae-font-sans); margin-top: 24px; border-top: 1px solid var(--ae-border); padding-top: 24px; }
-    .ae-section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-    .ae-section-header span { font-family: var(--ae-font); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ae-text-muted); }
-    .ae-section-header::before { content: ''; display: block; width: 3px; height: 14px; border-radius: 2px; background: var(--ae-gold); }
-    .ae-section-header::after { content: ''; flex: 1; height: 1px; background: var(--ae-border); }
-    .ae-card { background: var(--ae-bg-card); border: 1px solid var(--ae-border); border-radius: var(--ae-radius-lg); padding: 20px; margin-bottom: 16px; }
-    .ae-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    @media (max-width: 640px) { .ae-grid-2 { grid-template-columns: 1fr; } }
-    .ae-field { display: flex; flex-direction: column; gap: 6px; }
-    .ae-label { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ae-text-label); }
-    .ae-hint { font-size: 10px; color: var(--ae-text-muted); text-transform: none; letter-spacing: 0; margin-left: 6px; font-weight: 400; }
-    .ae-input, .ae-select, .ae-textarea {
-      background: var(--ae-bg-input); border: 1px solid var(--ae-border); border-radius: var(--ae-radius);
-      color: var(--ae-text); font-family: var(--ae-font-sans); font-size: 13px; padding: 9px 12px;
-      width: 100%; box-sizing: border-box; transition: border-color 0.15s; outline: none; -webkit-appearance: none; appearance: none;
-    }
-    .ae-input:focus, .ae-select:focus, .ae-textarea:focus { border-color: var(--ae-gold); background: #1e2024; }
-    .ae-select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 32px; }
-    .ae-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
-    .ae-metric-display { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding: 12px 14px; background: var(--ae-bg-section); border: 1px solid var(--ae-border); border-radius: var(--ae-radius); }
-    .ae-metric-label { font-family: var(--ae-font); font-size: 10px; color: var(--ae-text-muted); text-transform: uppercase; letter-spacing: 0.1em; flex: 1; }
-    .ae-metric-value { font-family: var(--ae-font); font-size: 13px; font-weight: 600; }
-    .ae-metric-value.positive { color: var(--ae-green); }
-    .ae-metric-value.negative { color: var(--ae-red); }
-    .ae-metric-value.neutral  { color: var(--ae-text-muted); }
-    .ae-efficiency-badge { font-family: var(--ae-font); font-size: 11px; padding: 3px 8px; border-radius: 3px; font-weight: 700; }
-    .ae-eff-good  { background: var(--ae-green-dim); color: var(--ae-green); }
-    .ae-eff-mid   { background: var(--ae-gold-dim);  color: var(--ae-gold); }
-    .ae-eff-poor  { background: var(--ae-red-dim);   color: var(--ae-red); }
-    .ae-q-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .ae-q-label { font-size: 12px; font-weight: 500; color: var(--ae-text); line-height: 1.4; margin-bottom: 4px; }
-    .ae-q-num { font-family: var(--ae-font); font-size: 10px; color: var(--ae-gold); margin-right: 6px; }
-    .ae-upload-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    @media (max-width: 640px) { .ae-upload-grid { grid-template-columns: 1fr; } }
-    .ae-upload-zone { position: relative; border: 1px dashed var(--ae-border); border-radius: var(--ae-radius); padding: 16px 12px; text-align: center; cursor: pointer; transition: border-color 0.15s, background 0.15s; background: var(--ae-bg-input); }
-    .ae-upload-zone:hover, .ae-upload-zone.dragover { border-color: var(--ae-gold); background: var(--ae-gold-dim); }
-    .ae-upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .ae-upload-icon { font-size: 22px; color: var(--ae-text-muted); margin-bottom: 6px; }
-    .ae-upload-title { font-size: 11px; font-weight: 600; color: var(--ae-text-label); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
-    .ae-upload-hint { font-size: 10px; color: var(--ae-text-muted); }
-    .ae-upload-preview { margin-top: 8px; border-radius: 4px; overflow: hidden; max-height: 100px; display: none; }
-    .ae-upload-preview img { width: 100%; height: 100px; object-fit: cover; }
-    .ae-upload-preview.has-image { display: block; }
-    .ae-divider { height: 1px; background: var(--ae-border); margin: 20px 0; }
-    .ae-save-flash { position: fixed; bottom: 24px; right: 24px; background: var(--ae-green-dim); border: 1px solid var(--ae-green); color: var(--ae-green); font-family: var(--ae-font); font-size: 11px; padding: 8px 16px; border-radius: var(--ae-radius); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 9999; letter-spacing: 0.08em; }
-    .ae-save-flash.show { opacity: 1; }
-  `;
-
-  var HTML = `
-  <div id="ae-module">
-    <div class="ae-section-header"><span>Metricas cuantitativas</span></div>
-    <div class="ae-card">
-      <div class="ae-grid-2">
-        <div class="ae-field">
-          <label class="ae-label" for="ae-setup-type">Tipo de Setup <span style="color:var(--ae-red)">*</span></label>
-          <select id="ae-setup-type" class="ae-select">
-            <option value="">— Seleccionar —</option>
-            <option value="continuation">Continuacion de Estructura</option>
-            <option value="reversal">Reversion pura tras barrido de liquidez</option>
-          </select>
-        </div>
-        <div class="ae-field">
-          <label class="ae-label" for="ae-sl-management">Gestion del Stop Loss <span style="color:var(--ae-red)">*</span></label>
-          <select id="ae-sl-management" class="ae-select">
-            <option value="">— Seleccionar —</option>
-            <option value="full">Full SL Respetado</option>
-            <option value="technical">SL Mitigado Tecnicamente</option>
-            <option value="emotional">Breakeven Emocional/Prematuro</option>
-          </select>
-        </div>
-      </div>
-      <div class="ae-divider"></div>
-      <div class="ae-grid-2">
-        <div class="ae-field">
-          <label class="ae-label" for="ae-mae">MAE — Max Adverse Excursion <span class="ae-hint">pips / precio</span></label>
-          <input id="ae-mae" type="number" step="0.01" min="0" placeholder="0.00" class="ae-input" />
-        </div>
-        <div class="ae-field">
-          <label class="ae-label" for="ae-mfe">MFE — Max Favorable Excursion <span class="ae-hint">pips / precio</span></label>
-          <input id="ae-mfe" type="number" step="0.01" min="0" placeholder="0.00" class="ae-input" />
-        </div>
-      </div>
-      <div class="ae-metric-display" id="ae-efficiency-display">
-        <span class="ae-metric-label">Eficiencia del trade</span>
-        <span class="ae-efficiency-badge ae-eff-mid" id="ae-efficiency-badge">—</span>
-        <span class="ae-metric-value neutral" id="ae-efficiency-val">—</span>
-      </div>
-    </div>
-
-    <div class="ae-section-header"><span>Recap cualitativo</span></div>
-    <div class="ae-card">
-      <div class="ae-q-grid" id="ae-qualitative-grid"></div>
-    </div>
-
-    <div class="ae-section-header"><span>Multimedia &amp; destacados</span></div>
-    <div class="ae-card">
-      <div class="ae-upload-grid">
-        <div class="ae-field">
-          <label class="ae-label">Trade tomado #1</label>
-          <div class="ae-upload-zone" id="ae-zone-t1">
-            <input type="file" id="ae-img-t1" accept="image/*" data-target="t1" />
-            <div class="ae-upload-icon">📸</div>
-            <div class="ae-upload-title">Screenshot</div>
-            <div class="ae-upload-hint">click o arrastra</div>
-            <div class="ae-upload-preview" id="ae-prev-t1"><img id="ae-prev-img-t1" src="" alt="Trade 1" /></div>
-          </div>
-        </div>
-        <div class="ae-field">
-          <label class="ae-label">Trade tomado #2</label>
-          <div class="ae-upload-zone" id="ae-zone-t2">
-            <input type="file" id="ae-img-t2" accept="image/*" data-target="t2" />
-            <div class="ae-upload-icon">📸</div>
-            <div class="ae-upload-title">Screenshot</div>
-            <div class="ae-upload-hint">click o arrastra</div>
-            <div class="ae-upload-preview" id="ae-prev-t2"><img id="ae-prev-img-t2" src="" alt="Trade 2" /></div>
-          </div>
-        </div>
-        <div class="ae-field">
-          <label class="ae-label" style="color: var(--ae-gold);">⭐ Best trade of the day</label>
-          <div class="ae-upload-zone" id="ae-zone-best" style="border-color: var(--ae-gold);">
-            <input type="file" id="ae-img-best" accept="image/*" data-target="best" />
-            <div class="ae-upload-icon">🏆</div>
-            <div class="ae-upload-title" style="color: var(--ae-gold);">Best setup</div>
-            <div class="ae-upload-hint">click o arrastra</div>
-            <div class="ae-upload-preview" id="ae-prev-best"><img id="ae-prev-img-best" src="" alt="Best trade" /></div>
-          </div>
-        </div>
-      </div>
-      <div class="ae-field" style="margin-top: 14px;">
-        <label class="ae-label" for="ae-best-note">Nota sobre el best trade del dia</label>
-        <textarea id="ae-best-note" class="ae-textarea" placeholder="¿Por que fue el mejor setup? ¿Que lo hizo ideal?" rows="3"></textarea>
-      </div>
-    </div>
-  </div>
-  <div class="ae-save-flash" id="ae-save-flash">✓ DATOS GUARDADOS</div>
-  `;
-
-  var QUALITATIVE_QUESTIONS = [
-    { id: "ae-q-direction",   label: "Why did I take long or short?" },
-    { id: "ae-q-placement",   label: "Were my entry, stop, and target well-placed based on structure and liquidity?" },
-    { id: "ae-q-plan",        label: "Did I follow my trading plan and rules? If not, why?" },
-    { id: "ae-q-emotions",    label: "What were my emotions before, during, and after the trade and did I rush?" },
-    { id: "ae-q-levels",      label: "What levels did price respect and was it the levels I had marked out?" },
-    { id: "ae-q-confluences", label: "What confluences did I enter off of?" },
-    { id: "ae-q-bias",        label: "Did the trade align with the session bias and market structure?" },
-    { id: "ae-q-bettersetup", label: "If there was a better setup, how could I have spotted this trade and taken it?" },
-    { id: "ae-q-learned",     label: "What's one thing I learned or want to do better in the next session?" },
-  ];
-
-  function calcTradeEfficiency(entry, mae, mfe) {
-    if (!mfe || mfe === 0) return { ratio: null, pct: null, label: "Sin datos", cssClass: "ae-eff-mid" };
-    var ratio = mae > 0 ? parseFloat((mfe / mae).toFixed(2)) : null;
-    var pct   = mae > 0 ? parseFloat(((mfe / (mfe + mae)) * 100).toFixed(1)) : 100;
-    var label, cssClass;
-    if (pct >= 70)      { label = pct + "% EFF"; cssClass = "ae-eff-good"; }
-    else if (pct >= 40) { label = pct + "% EFF"; cssClass = "ae-eff-mid"; }
-    else                { label = pct + "% EFF"; cssClass = "ae-eff-poor"; }
-    return { ratio: ratio, pct: pct, label: label, cssClass: cssClass };
-  }
-
-  function collectAEData() {
-    var qualitative = {};
-    QUALITATIVE_QUESTIONS.forEach(function(q) {
-      var el = document.getElementById(q.id);
-      qualitative[q.id] = el ? el.value.trim() : "";
-    });
-    var mae   = parseFloat((document.getElementById("ae-mae") || {}).value) || 0;
-    var mfe   = parseFloat((document.getElementById("ae-mfe") || {}).value) || 0;
-    var entry = parseFloat((document.getElementById("fEntry") || {}).value || 0);
-    var efficiency = calcTradeEfficiency(entry, mae, mfe);
-    return {
-      setupType:    (document.getElementById("ae-setup-type") || {}).value || "",
-      slManagement: (document.getElementById("ae-sl-management") || {}).value || "",
-      mae: mae, mfe: mfe, efficiency: efficiency, qualitative: qualitative,
-      bestNote: ((document.getElementById("ae-best-note") || {}).value || "").trim(),
-      images: {
-        t1:   (window._aeImages || {}).t1   || null,
-        t2:   (window._aeImages || {}).t2   || null,
-        best: (window._aeImages || {}).best || null,
-      },
-    };
-  }
-
-  function saveAEData(tradeId) {
-    var aeData = collectAEData();
-    var key    = "ae_trade_" + (tradeId || Date.now());
-    try { localStorage.setItem(key, JSON.stringify(aeData)); showSaveFlash(); }
-    catch (err) { console.error("[AurumExtension] Error guardando datos:", err); }
-    return { key: key, aeData: aeData };
-  }
-
-  function loadAEData(tradeId) {
-    try { var raw = localStorage.getItem("ae_trade_" + tradeId); return raw ? JSON.parse(raw) : null; }
-    catch(e) { return null; }
-  }
-
-  function populateAEForm(data) {
-    if (!data) return;
-    setVal("ae-setup-type",    data.setupType);
-    setVal("ae-sl-management", data.slManagement);
-    setVal("ae-mae",           data.mae);
-    setVal("ae-mfe",           data.mfe);
-    setVal("ae-best-note",     data.bestNote);
-    if (data.qualitative) Object.entries(data.qualitative).forEach(function(kv) { setVal(kv[0], kv[1]); });
-  }
-
-  function setVal(id, val) {
-    var el = document.getElementById(id);
-    if (el && val !== undefined && val !== null) el.value = val;
-  }
-
-  function showSaveFlash() {
-    var el = document.getElementById("ae-save-flash");
-    if (!el) return;
-    el.classList.add("show");
-    setTimeout(function() { el.classList.remove("show"); }, 2000);
-  }
-
-  function updateEfficiencyDisplay() {
-    var mae   = parseFloat((document.getElementById("ae-mae") || {}).value) || 0;
-    var mfe   = parseFloat((document.getElementById("ae-mfe") || {}).value) || 0;
-    var entry = parseFloat((document.getElementById("fEntry") || {}).value || 0);
-    var eff   = calcTradeEfficiency(entry, mae, mfe);
-    var badge = document.getElementById("ae-efficiency-badge");
-    var valEl = document.getElementById("ae-efficiency-val");
-    if (badge && valEl) {
-      badge.textContent = eff.label;
-      badge.className   = "ae-efficiency-badge " + eff.cssClass;
-      valEl.textContent = eff.ratio !== null ? "MFE/MAE " + eff.ratio + ":1" : "—";
-      valEl.className   = "ae-metric-value " + (eff.pct >= 60 ? "positive" : eff.pct >= 40 ? "neutral" : "negative");
-    }
-  }
-
-  window._aeImages = { t1: null, t2: null, best: null };
-
-  function handleImageUpload(inputEl) {
-    var file   = inputEl.files[0];
-    var target = inputEl.dataset.target;
-    if (!file || !target) return;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var b64 = e.target.result;
-      window._aeImages[target] = b64;
-      var prev    = document.getElementById("ae-prev-" + target);
-      var prevImg = document.getElementById("ae-prev-img-" + target);
-      if (prev && prevImg) { prevImg.src = b64; prev.classList.add("has-image"); }
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function hookSaveButton() {
-    var saveBtn = document.getElementById("saveBtn");
-    if (saveBtn) {
-      saveBtn.addEventListener("click", function() { saveAEData("trade_" + Date.now()); }, true);
-      return;
-    }
-    var candidates = Array.from(document.querySelectorAll("button"))
-      .filter(function(b) { return /guardar|save|registrar|submit/i.test(b.textContent); });
-    candidates.forEach(function(btn) {
-      btn.addEventListener("click", function() { saveAEData("trade_" + Date.now()); }, true);
-    });
-  }
-
-  function buildQualitativeGrid() {
-    var grid = document.getElementById("ae-qualitative-grid");
-    if (!grid) return;
-    grid.innerHTML = QUALITATIVE_QUESTIONS.map(function(q, i) {
-      return '<div class="ae-field"><label class="ae-q-label" for="' + q.id + '">' +
-        '<span class="ae-q-num">' + String(i + 1).padStart(2, "0") + '.</span>' + q.label +
-        ' <span style="color: var(--ae-red); margin-left:3px;">*</span></label>' +
-        '<textarea id="' + q.id + '" class="ae-textarea" rows="3" placeholder="..."></textarea></div>';
-    }).join("");
-  }
-
-  function setupDragDrop(zoneId) {
-    var zone = document.getElementById(zoneId);
-    if (!zone) return;
-    zone.addEventListener("dragover",  function(e) { e.preventDefault(); zone.classList.add("dragover"); });
-    zone.addEventListener("dragleave", function()  { zone.classList.remove("dragover"); });
-    zone.addEventListener("drop",      function(e) {
-      e.preventDefault(); zone.classList.remove("dragover");
-      var input = zone.querySelector("input[type=file]");
-      if (input && e.dataTransfer.files.length) { input.files = e.dataTransfer.files; handleImageUpload(input); }
-    });
-  }
-
-  function mount() {
-    var style = document.createElement("style");
-    style.textContent = CSS;
-    document.head.appendChild(style);
-
-    var saveBtn = document.getElementById("saveBtn");
-    var wrapper = document.createElement("div");
-    wrapper.innerHTML = HTML;
-
-    if (saveBtn && saveBtn.closest(".form-group")) {
-      var formGroup = saveBtn.closest(".form-group");
-      formGroup.parentElement.insertBefore(wrapper, formGroup);
-    } else if (saveBtn && saveBtn.parentElement) {
-      saveBtn.parentElement.insertBefore(wrapper, saveBtn);
-    } else {
-      document.body.appendChild(wrapper);
-    }
-
-    buildQualitativeGrid();
-
-    ["ae-mae", "ae-mfe"].forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) el.addEventListener("input", updateEfficiencyDisplay);
-    });
-    ["ae-img-t1", "ae-img-t2", "ae-img-best"].forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) el.addEventListener("change", function(e) { handleImageUpload(e.target); });
-    });
-    ["ae-zone-t1", "ae-zone-t2", "ae-zone-best"].forEach(setupDragDrop);
-
-    hookSaveButton();
-    console.log("[AurumExtension] ✓ Modulo montado correctamente.");
-  }
-
-  window.AurumExtension = {
-    save:           saveAEData,
-    load:           loadAEData,
-    populate:       populateAEForm,
-    collect:        collectAEData,
-    calcEfficiency: calcTradeEfficiency,
-  };
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", mount);
-  } else {
-    mount();
-  }
-
-})();
 </script>
 
 </body>
