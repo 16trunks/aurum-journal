@@ -289,7 +289,7 @@
   </div>
 </div>
 
-<div class="loading-overlay show" id="loadingOverlay">
+<div class="loading-overlay" id="loadingOverlay">
   <div class="loading-logo">⬡ AURUM</div>
   <div class="spinner"></div>
   <div class="loading-sub" id="loadingText">Conectando con Firebase...</div>
@@ -729,7 +729,16 @@ window._signInWithGoogle = async () => {
 
 window._logOut = async () => { if (unsubscribe) unsubscribe(); await signOut(auth); document.getElementById('passwordScreen').classList.remove('hidden'); trades = []; renderList(); updateStats(); };
 
+// Timeout de seguridad: si Firebase no responde en 8s, muestra login
+const authTimeout = setTimeout(() => {
+  document.getElementById('loadingOverlay').classList.remove('show');
+  document.getElementById('passwordScreen').classList.remove('hidden');
+  document.getElementById('passError').textContent = 'Tiempo de conexión agotado. Intenta de nuevo.';
+  document.getElementById('passError').style.display = 'block';
+}, 8000);
+
 onAuthStateChanged(auth, (user) => {
+  clearTimeout(authTimeout);
   if (user) {
     document.getElementById('passwordScreen').classList.add('hidden');
     document.getElementById('loadingOverlay').classList.add('show');
@@ -743,15 +752,26 @@ onAuthStateChanged(auth, (user) => {
 });
 
 function initRealtime() {
+  // Timeout de seguridad para Firestore
+  const firestoreTimeout = setTimeout(() => {
+    document.getElementById('loadingOverlay').classList.remove('show');
+    setSyncStatus('error', 'Sin conexión · modo offline');
+    document.getElementById('loadingText').textContent = '⚠ No se pudo conectar a Firestore.';
+  }, 10000);
+
   const q = query(tradesCol, orderBy('timestamp', 'desc'));
   unsubscribe = onSnapshot(q, (snapshot) => {
+    clearTimeout(firestoreTimeout);
     trades = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     renderList(); updateStats(); renderCalendar(); renderEquity(); renderEmotions();
     setSyncStatus('online', `Sincronizado · ${trades.length} trades`);
     document.getElementById('loadingOverlay').classList.remove('show');
   }, (err) => {
+    clearTimeout(firestoreTimeout);
+    document.getElementById('loadingOverlay').classList.remove('show');
     setSyncStatus('error', 'Error de conexión');
     document.getElementById('loadingText').textContent = '⚠ Error conectando.';
+    console.error('Firestore error:', err);
   });
 }
 
@@ -1106,6 +1126,7 @@ function renderEquity() {
 
 // ── EMOTIONS ──
 function renderEmotions() {
+  if (!document.getElementById('emoStatGrid')) return;
   const emos = ['neutro','confiado','ansioso','fomo','vengativo'];
   const emoLabels = { neutro:'😐 Neutro', confiado:'💪 Confiado', ansioso:'😰 Ansioso', fomo:'🚀 FOMO', vengativo:'😤 Vengativo' };
   const emoColors = { neutro:'#8a99ad', confiado:'#00d48a', ansioso:'#ff9f40', fomo:'#3d7eff', vengativo:'#ff4d6a' };
