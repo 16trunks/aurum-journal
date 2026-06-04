@@ -275,7 +275,6 @@
 </head>
 <body>
 
-<!-- PASSWORD SCREEN -->
 <div class="password-screen" id="passwordScreen">
   <div class="pass-logo">⬡ AURUM</div>
   <div class="pass-sub">TRADING JOURNAL · ACCESO PRIVADO</div>
@@ -315,7 +314,6 @@
     </div>
   </header>
 
-  <!-- STATS -->
   <div class="stats-bar">
     <div class="stat-card neutral"><div class="stat-label">Total Trades</div><div class="stat-value" id="statTotal" style="color:var(--text)">0</div></div>
     <div class="stat-card green"><div class="stat-label">Win Rate</div><div class="stat-value green" id="statWR">—</div></div>
@@ -324,7 +322,6 @@
     <div class="stat-card green"><div class="stat-label">Mejor Trade</div><div class="stat-value green" id="statBest">—</div></div>
   </div>
 
-  <!-- TABS -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('journal',this)">📋 Journal</button>
     <button class="tab-btn" onclick="switchTab('calendar',this)">📅 Calendario</button>
@@ -332,7 +329,6 @@
         <button class="tab-btn" onclick="switchTab('analytics',this)">📊 Analytics</button>
   </div>
 
-  <!-- TAB: JOURNAL -->
   <div class="tab-content active" id="tab-journal">
     <div class="main-grid">
       <div class="form-panel">
@@ -377,10 +373,8 @@
               <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
             </div>
           </div>
-          <!-- ── BITÁCORA CUANTITATIVA ── -->
           <div class="form-group full" id="quant-section" style="background:#0b0f12;border:1px solid #1e252b;border-radius:10px;padding:20px;margin-top:4px;">
 
-            <!-- Fila dropdowns -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
               <div style="display:flex;flex-direction:column;gap:6px;">
                 <label style="font-family:'Space Mono',monospace;font-size:10px;color:#f0a85d;letter-spacing:0.1em;text-transform:uppercase;">Tipo de Setup <span style="color:#e84b5a">*</span></label>
@@ -401,7 +395,6 @@
               </div>
             </div>
 
-            <!-- MAE / MFE -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
               <div style="display:flex;flex-direction:column;gap:6px;">
                 <label style="font-family:'Space Mono',monospace;font-size:10px;color:#f0a85d;letter-spacing:0.1em;text-transform:uppercase;">MAE <span style="color:#8a96a3;font-size:9px;text-transform:none;letter-spacing:0">Max Adverse Excursion (pips)</span></label>
@@ -413,14 +406,12 @@
               </div>
             </div>
 
-            <!-- Efficiency display -->
             <div id="efficiencyDisplay" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#12171c;border:1px solid #1e252b;border-radius:6px;margin-bottom:20px;">
               <span style="font-family:'Space Mono',monospace;font-size:10px;color:#8a96a3;text-transform:uppercase;letter-spacing:0.1em;flex:1;">Eficiencia del trade</span>
               <span id="effBadge" style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:3px 8px;border-radius:3px;background:rgba(240,168,93,0.12);color:#f0a85d;">—</span>
               <span id="effRatio" style="font-family:'Space Mono',monospace;font-size:12px;color:#8a96a3;">—</span>
             </div>
 
-            <!-- Preguntas cualitativas -->
             <div style="border-top:1px solid #1e252b;padding-top:16px;">
               <div style="font-family:'Space Mono',monospace;font-size:9px;color:#f0a85d;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:14px;">Recap Cualitativo</div>
               <div id="qualGrid" style="display:flex;flex-direction:column;gap:12px;"></div>
@@ -447,7 +438,6 @@
     </div>
   </div>
 
-  <!-- TAB: CALENDARIO -->
   <div class="tab-content" id="tab-calendar">
     <div class="calendar-section">
       <div class="cal-header">
@@ -483,7 +473,6 @@
     </div>
   </div>
 
-  <!-- TAB: EQUITY -->
   <div class="tab-content" id="tab-equity">
     <div class="chart-section">
       <div class="chart-controls">
@@ -514,7 +503,6 @@
 
 </div>
 
-  <!-- TAB: ANALYTICS -->
   <div class="tab-content" id="tab-analytics">
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
       <div class="stat-card gold" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px">
@@ -552,7 +540,6 @@
 
 </div>
 
-<!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-header">
@@ -583,7 +570,6 @@
         <div id="mQuantGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px"></div>
         <div class="trade-notes-display" id="mNotes" style="white-space:pre-wrap;font-size:12px;line-height:1.8;">Sin notas.</div>
       </div>
-      <!-- EDIT PANEL -->
       <div id="editPanel" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
         <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold2);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px">✏️ Editar Trade</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
@@ -1106,6 +1092,9 @@ function renderEquity() {
 
 // ── EMOTIONS ──
 function renderEmotions() {
+  const emoGridEl = document.getElementById('emoStatGrid');
+  if (!emoGridEl) return; // FIX: Esto evita que la aplicación entera falle si falta la pestaña de emociones.
+
   const emos = ['neutro','confiado','ansioso','fomo','vengativo'];
   const emoLabels = { neutro:'😐 Neutro', confiado:'💪 Confiado', ansioso:'😰 Ansioso', fomo:'🚀 FOMO', vengativo:'😤 Vengativo' };
   const emoColors = { neutro:'#8a99ad', confiado:'#00d48a', ansioso:'#ff9f40', fomo:'#3d7eff', vengativo:'#ff4d6a' };
@@ -1118,7 +1107,7 @@ function renderEmotions() {
   });
 
   const maxWR = Math.max(...emos.map(e=>parseFloat(stats[e].wr)||0),1);
-  document.getElementById('emoStatGrid').innerHTML = emos.map(e => {
+  emoGridEl.innerHTML = emos.map(e => {
     const s = stats[e];
     return `<div class="emo-stat">
       <div class="emo-name" style="color:${emoColors[e]}">${emoLabels[e]}</div>
@@ -1128,36 +1117,42 @@ function renderEmotions() {
   }).join('');
 
   // Donut chart
-  const ctx2 = document.getElementById('emoChart').getContext('2d');
-  if (emoChartInst) emoChartInst.destroy();
-  emoChartInst = new Chart(ctx2, {
-    type: 'doughnut',
-    data: {
-      labels: emos.map(e=>emoLabels[e]),
-      datasets: [{ data: emos.map(e=>stats[e].total), backgroundColor: emos.map(e=>emoColors[e]), borderColor: '#080b0f', borderWidth: 4, hoverBorderWidth: 2 }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      cutout: '65%',
-      plugins: {
-        legend: { position:'right', labels:{ color:'#8a99ad', font:{family:'Space Mono',size:10}, padding:14, usePointStyle:true, pointStyle:'rectRounded' } },
-        tooltip: { callbacks: { label: c => ` ${c.label}: ${c.raw} trades (${trades.length?((c.raw/trades.length)*100).toFixed(0):0}%)` } }
+  const canvasEl = document.getElementById('emoChart');
+  if (canvasEl) {
+    const ctx2 = canvasEl.getContext('2d');
+    if (emoChartInst) emoChartInst.destroy();
+    emoChartInst = new Chart(ctx2, {
+      type: 'doughnut',
+      data: {
+        labels: emos.map(e=>emoLabels[e]),
+        datasets: [{ data: emos.map(e=>stats[e].total), backgroundColor: emos.map(e=>emoColors[e]), borderColor: '#080b0f', borderWidth: 4, hoverBorderWidth: 2 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+          legend: { position:'right', labels:{ color:'#8a99ad', font:{family:'Space Mono',size:10}, padding:14, usePointStyle:true, pointStyle:'rectRounded' } },
+          tooltip: { callbacks: { label: c => ` ${c.label}: ${c.raw} trades (${trades.length?((c.raw/trades.length)*100).toFixed(0):0}%)` } }
+        }
       }
-    }
-  });
+    });
+  }
 
   // Discipline analysis
-  const total = trades.length;
-  const anxious = trades.filter(t=>t.emotion==='ansioso'||t.emotion==='fomo'||t.emotion==='vengativo').length;
-  const anxiousWins = trades.filter(t=>(t.emotion==='ansioso'||t.emotion==='fomo'||t.emotion==='vengativo')&&t.result==='win').length;
-  const calmWins = trades.filter(t=>(t.emotion==='neutro'||t.emotion==='confiado')&&t.result==='win').length;
-  const calm = trades.filter(t=>t.emotion==='neutro'||t.emotion==='confiado').length;
-  document.getElementById('disciplineList').innerHTML = [
-    { label:'Trades en estado óptimo (neutro/confiado)', val: calm, color:'var(--green)', pct: total?((calm/total)*100).toFixed(0)+'%':'—' },
-    { label:'Trades en estado de riesgo (ansioso/FOMO/vengativo)', val: anxious, color:'var(--red)', pct: total?((anxious/total)*100).toFixed(0)+'%':'—' },
-    { label:'Win rate en estado óptimo', val: calm?(anxiousWins/calm*100).toFixed(0)+'%':'—', color: 'var(--green)', pct: calm?(calmWins/calm*100).toFixed(0)+'%':'—' },
-    { label:'Win rate en estado de riesgo', val: anxious?(anxiousWins/anxious*100).toFixed(0)+'%':'—', color: 'var(--red)', pct: '' },
-  ].map(item=>`<div class="discipline-item"><span class="di-label">${item.label}</span><span class="di-val" style="color:${item.color}">${item.pct||item.val}</span></div>`).join('');
+  const disciplineEl = document.getElementById('disciplineList');
+  if (disciplineEl) {
+    const total = trades.length;
+    const anxious = trades.filter(t=>t.emotion==='ansioso'||t.emotion==='fomo'||t.emotion==='vengativo').length;
+    const anxiousWins = trades.filter(t=>(t.emotion==='ansioso'||t.emotion==='fomo'||t.emotion==='vengativo')&&t.result==='win').length;
+    const calmWins = trades.filter(t=>(t.emotion==='neutro'||t.emotion==='confiado')&&t.result==='win').length;
+    const calm = trades.filter(t=>t.emotion==='neutro'||t.emotion==='confiado').length;
+    disciplineEl.innerHTML = [
+      { label:'Trades en estado óptimo (neutro/confiado)', val: calm, color:'var(--green)', pct: total?((calm/total)*100).toFixed(0)+'%':'—' },
+      { label:'Trades en estado de riesgo (ansioso/FOMO/vengativo)', val: anxious, color:'var(--red)', pct: total?((anxious/total)*100).toFixed(0)+'%':'—' },
+      { label:'Win rate en estado óptimo', val: calm?(anxiousWins/calm*100).toFixed(0)+'%':'—', color: 'var(--green)', pct: calm?(calmWins/calm*100).toFixed(0)+'%':'—' },
+      { label:'Win rate en estado de riesgo', val: anxious?(anxiousWins/anxious*100).toFixed(0)+'%':'—', color: 'var(--red)', pct: '' },
+    ].map(item=>`<div class="discipline-item"><span class="di-label">${item.label}</span><span class="di-val" style="color:${item.color}">${item.pct||item.val}</span></div>`).join('');
+  }
 }
 
 // ── MODAL ──
