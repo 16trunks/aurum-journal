@@ -539,6 +539,13 @@
         <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);margin-top:10px">Win Rate últimos 10: <span id="aLast10WR" style="color:var(--gold2);font-weight:700">—</span></div>
       </div>
     </div>
+    
+    <div class="chart-section" style="padding:20px; margin-bottom:20px;">
+      <div class="panel-title" style="margin-bottom:14px">Métricas por Tipo de Setup</div>
+      <div id="aSetupGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+         </div>
+    </div>
+
     <div class="chart-section" style="padding:20px">
       <div class="panel-title" style="margin-bottom:14px">Breakdown de P&L</div>
       <div id="aBreakdown" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px"></div>
@@ -1538,6 +1545,50 @@ function renderAnalytics() {
       {label:'Net P&L',val:(grossW-grossL>=0?'+':'')+' $'+(grossW-grossL).toFixed(2),sub:'acumulado',color:grossW-grossL>=0?'var(--green)':'var(--red)'},
     ];
     breakdown.innerHTML=items.map(i=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px"><div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">${i.label}</div><div style="font-size:18px;font-weight:800;color:${i.color};font-family:'Space Mono',monospace">${i.val}</div><div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);margin-top:4px">${i.sub}</div></div>`).join('');
+  }
+
+  // --- NUEVAS MÉTRICAS: TIPO DE SETUP ---
+  const setupGrid = document.getElementById('aSetupGrid');
+  if (setupGrid) {
+    const continuationTrades = trades.filter(t => t.setupType === 'continuation');
+    const reversalTrades = trades.filter(t => t.setupType === 'reversal');
+
+    const calcSetupStats = (setupArray) => {
+      const total = setupArray.length;
+      if (total === 0) return { total: 0, dist: '0%', wr: '—', wrColor: 'var(--text3)' };
+      const setupWins = setupArray.filter(t => t.result === 'win').length;
+      const dist = ((total / trades.length) * 100).toFixed(1) + '%';
+      const wrNum = (setupWins / total) * 100;
+      const wr = wrNum.toFixed(1) + '%';
+      const wrColor = wrNum >= 50 ? 'var(--green)' : 'var(--red)';
+      return { total, dist, wr, wrColor };
+    };
+
+    const contStats = calcSetupStats(continuationTrades);
+    const revStats = calcSetupStats(reversalTrades);
+
+    const buildSetupCard = (title, stats) => `
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold2);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;font-weight:700">${title}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Trades</div>
+            <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:800;color:var(--text)">${stats.total}</div>
+          </div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Volumen</div>
+            <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:800;color:var(--text2)">${stats.dist}</div>
+          </div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Win Rate</div>
+            <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:800;color:${stats.wrColor}">${stats.wr}</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    setupGrid.innerHTML = buildSetupCard('Continuación de Estructura', contStats) + 
+                          buildSetupCard('Reversión tras Barrida', revStats);
   }
 }
 </script>
