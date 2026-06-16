@@ -501,7 +501,7 @@
   </div>
 
   <div class="tab-content" id="tab-analytics">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
       <div class="stat-card gold" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px">
         <div class="stat-label">Expectancy</div>
         <div class="stat-value gold" id="aExpectancy">—</div>
@@ -516,6 +516,11 @@
         <div class="stat-label">Avg Win / Avg Loss</div>
         <div class="stat-value" id="aAvgWL" style="color:var(--accent)">—</div>
         <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);margin-top:6px">Ratio promedio win vs loss</div>
+      </div>
+      <div class="stat-card neutral" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px">
+        <div class="stat-label">Break Even Rate</div>
+        <div class="stat-value" id="aBERate" style="color:var(--text)">—</div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);margin-top:6px" id="aBEFreq">1 de cada X trades</div>
       </div>
     </div>
     
@@ -619,7 +624,7 @@
   </div>
 </div>
 
-<div class="lightbox" id="lightbox" onclick="this.classList.remove('open')">
+<div class="lightbox" id="lightbox">
   <img id="lightboxImg" src="">
 </div>
 
@@ -871,19 +876,29 @@ function renderList() {
 // ── STATS ──
 function updateStats() {
   if (!trades.length) { document.getElementById('statTotal').textContent='0'; ['statWR','statPnl','statRR','statBest'].forEach(id=>document.getElementById(id).textContent='—'); return; }
-  const wins=trades.filter(t=>t.result==='win').length;
-  const wr=((wins/trades.length)*100).toFixed(0);
-  const total=trades.reduce((a,t)=>a+(t.pnl||0),0);
-  const rrs=trades.filter(t=>t.rr).map(t=>parseFloat(t.rr));
-  const avgRR=rrs.length?(rrs.reduce((a,b)=>a+b,0)/rrs.length).toFixed(2):null;
-  const best=Math.max(...trades.map(t=>t.pnl||0));
-  document.getElementById('statTotal').textContent=trades.length;
-  document.getElementById('statWR').textContent=wr+'%';
-  document.getElementById('statWR').className='stat-value '+(wr>=50?'green':'red');
-  document.getElementById('statPnl').textContent=(total>=0?'+':'')+'$'+total.toFixed(2);
-  document.getElementById('statPnl').className='stat-value '+(total>=0?'gold':'red');
-  document.getElementById('statRR').textContent=avgRR?'1:'+avgRR:'—';
-  document.getElementById('statBest').textContent=best>0?'+$'+best.toFixed(2):'—';
+  
+  const wins = trades.filter(t=>t.result==='win').length;
+  const losses = trades.filter(t=>t.result==='loss').length;
+  const pureTrades = wins + losses; // Excluimos BE del divisor
+  
+  // Cálculo puro del Win Rate
+  const wr = pureTrades > 0 ? ((wins/pureTrades)*100).toFixed(0) : 0;
+  
+  const total = trades.reduce((a,t)=>a+(t.pnl||0),0);
+  const rrs = trades.filter(t=>t.rr).map(t=>parseFloat(t.rr));
+  const avgRR = rrs.length ? (rrs.reduce((a,b)=>a+b,0)/rrs.length).toFixed(2) : null;
+  const best = Math.max(...trades.map(t=>t.pnl||0));
+  
+  document.getElementById('statTotal').textContent = trades.length; // Los BE siguen sumando al volumen
+  
+  const wrEl = document.getElementById('statWR');
+  wrEl.textContent = pureTrades > 0 ? wr+'%' : '—';
+  wrEl.className = 'stat-value ' + (wr>=50 ? 'green' : pureTrades > 0 ? 'red' : '');
+  
+  document.getElementById('statPnl').textContent = (total>=0?'+':'')+'$'+total.toFixed(2);
+  document.getElementById('statPnl').className = 'stat-value '+(total>=0?'gold':'red');
+  document.getElementById('statRR').textContent = avgRR?'1:'+avgRR:'—';
+  document.getElementById('statBest').textContent = best>0?'+$'+best.toFixed(2):'—';
 }
 
 // ── CALENDAR ──
@@ -1298,17 +1313,22 @@ function renderAnalytics() {
       const col=t.result==='win'?'var(--green)':t.result==='loss'?'var(--red)':'var(--accent)';
       return `<div title="${t.result.toUpperCase()} $${t.pnl||0}" style="width:28px;height:28px;border-radius:4px;background:${col};opacity:0.85;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:9px;color:#fff;font-weight:700">${t.result==='win'?'W':t.result==='loss'?'L':'B'}</div>`;
     }).join('');
-    const l10wr=last10.length?((last10.filter(t=>t.result==='win').length/last10.length)*100).toFixed(0)+'%':'—';
-    const l10El=document.getElementById('aLast10WR');
+    
+    // Last 10 Pure
+    const last10Pure = last10.filter(t => t.result === 'win' || t.result === 'loss');
+    const l10wr = last10Pure.length ? ((last10Pure.filter(t=>t.result==='win').length/last10Pure.length)*100).toFixed(0)+'%' : '—';
+    const l10El = document.getElementById('aLast10WR');
     if(l10El){l10El.textContent=l10wr;l10El.style.color=parseInt(l10wr)>=50?'var(--green)':'var(--red)';}
   }
   
   const calcStats = (arr) => {
     const total = arr.length;
     const wins = arr.filter(t=>t.result==='win').length;
+    const losses = arr.filter(t=>t.result==='loss').length;
+    const pure = wins + losses;
     const pnl = arr.reduce((a,b)=>a+(b.pnl||0),0);
-    const wrNum = total ? (wins/total)*100 : 0;
-    const wr = wrNum.toFixed(1) + '%';
+    const wrNum = pure ? (wins/pure)*100 : 0;
+    const wr = pure ? wrNum.toFixed(1) + '%' : '—';
     const wrColor = wrNum >= 50 ? 'var(--green)' : 'var(--red)';
     return { total, pnl, wr, wrColor };
   };
@@ -1390,6 +1410,16 @@ function renderAnalytics() {
       }
       elDays.innerHTML = dayHtml;
   }
+
+  // Lógica Break Even
+  const beTrades = trades.filter(t=>t.result==='be').length;
+  const beRate = trades.length ? ((beTrades / trades.length) * 100).toFixed(1) : 0;
+  const beFreq = beTrades > 0 ? Math.round(trades.length / beTrades) : 0;
+  
+  const aBERateEl = document.getElementById('aBERate');
+  if(aBERateEl) aBERateEl.textContent = beRate + '%';
+  const aBEFreqEl = document.getElementById('aBEFreq');
+  if(aBEFreqEl) aBEFreqEl.textContent = beFreq > 0 ? `1 de cada ${beFreq} trades` : 'Sin trades en B/E';
 }
 
 // ── BUILD QUALITATIVE QUESTIONS ──
@@ -1441,6 +1471,55 @@ window._calcEfficiency = window.calcEfficiency = () => {
   if (pct>=70) { badge.style.background='var(--green-dim)'; badge.style.color='var(--green)'; }
   else if (pct>=40) { badge.style.background='var(--gold-dim)'; badge.style.color='var(--gold)'; }
   else { badge.style.background='var(--red-dim)'; badge.style.color='var(--red)'; }
+};
+
+window._openLightbox = (src) => {
+  const lb = document.getElementById('lightbox');
+  const img = document.getElementById('lightboxImg');
+  
+  img.src = src;
+  lb.classList.add('open');
+  
+  // Estilos iniciales
+  img.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+  img.style.cursor = 'zoom-in';
+  img.style.transform = 'scale(1)';
+  lb.style.overflow = 'hidden'; // Sin scroll inicial
+  
+  let isZoomed = false;
+
+  // Lógica de Zoom en imagen
+  img.onclick = (e) => {
+    e.stopPropagation();
+    isZoomed = !isZoomed;
+    if (isZoomed) {
+      img.style.transform = 'scale(1.8)';
+      img.style.cursor = 'zoom-out';
+      lb.style.overflow = 'auto'; // Permitir pan/scroll
+    } else {
+      img.style.transform = 'scale(1)';
+      img.style.cursor = 'zoom-in';
+      lb.style.overflow = 'hidden';
+    }
+  };
+
+  // Cerrar al clickear el fondo oscuro
+  lb.onclick = (e) => {
+    if (e.target === lb) closeLb();
+  };
+
+  // Cerrar con Escape
+  const handleEsc = (e) => {
+    if (e.key === 'Escape') closeLb();
+  };
+  document.addEventListener('keydown', handleEsc);
+
+  function closeLb() {
+    lb.classList.remove('open');
+    img.style.transform = 'scale(1)';
+    isZoomed = false;
+    document.removeEventListener('keydown', handleEsc);
+  }
 };
 
 </script>
