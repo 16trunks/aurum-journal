@@ -811,8 +811,9 @@ window._saveTrade = async () => {
   try {
     setSyncStatus('syncing','Guardando...');
     
+    // AQUÍ SE GUARDAN TODOS LOS IDs (Viejos y nuevos, para que no falle nada)
     const qualData = {};
-    const qIds = ['fQ1','fQ2','fQ3','fQ4','fQ5','fQ6','fQ7','fQ8','fQ9'];
+    const qIds = ['fQ1','fQ2','fQ3','fQ4','fQ5','fQ6','fQ7','fQ8','fQ9','fQ10','fQ11'];
     qIds.forEach(id => { const el=document.getElementById(id); qualData[id]=el?el.value.trim():''; });
     
     await addDoc(tradesCol, {
@@ -1120,28 +1121,32 @@ window._openTradeModal = (id) => {
   const shot=document.getElementById('mScreenshot');
   if(t.screenshotBase64){shot.src=t.screenshotBase64;shot.style.display='block';}else{shot.style.display='none';}
   
-  const qLabels=[
-    'Why did I take long or short?',
-    'Were my entry, stop, and target well-placed based on structure and liquidity?',
-    'Did I follow my trading plan and rules? If not, why?',
-    'What were my emotions before, during, and after the trade and did I rush?',
-    'What levels did price respect and was it the levels I had marked out?',
-    'What confluences did I enter off of?',
-    'Did the trade align with the session bias and market structure?',
-    'If there was a better setup, how could I have spotted this trade and taken it?',
-    'What\'s one thing I learned or want to do better in the next session?'
-  ];
+  // DICCIONARIO DE PREGUNTAS (Respeta los IDs históricos y asigna los nuevos)
+  const qDict = {
+    fQ10: '1st step, high time frame (1d or 4hr chart), intermediate time frame (15min or 5min chart, whatever the gap delivery was) and low time frame (1min chart) screenshot of the trade',
+    fQ11: '2nd htf dol, low tf dol, delivery, protected low/high, if the candles were good or bad (volume), bullish or bearish structure and lr.',
+    fQ2: 'Were my entry, stop, and target well-placed based on structure and liquidity?',
+    fQ3: 'Did I follow my trading plan and rules? If not, why?',
+    fQ4: 'What were my emotions before, during, and after the trade and did I rush?',
+    fQ9: 'What\'s one thing I learned or want to do better in the next session?',
+    // Estos quedan guardados por si abres un trade de hace meses que las tenía respondidas
+    fQ1: 'Why did I take long or short?',
+    fQ5: 'What levels did price respect and was it the levels I had marked out?',
+    fQ6: 'What confluences did I enter off of?',
+    fQ7: 'Did the trade align with the session bias and market structure?',
+    fQ8: 'If there was a better setup, how could I have spotted this trade and taken it?'
+  };
+
   let notesContent='';
-  
   if (t.notes && t.notes.trim() !== '') {
     notesContent += `<div style="color:var(--gold2);font-family:'Space Mono',monospace;font-size:10px;margin-top:12px;margin-bottom:6px;letter-spacing:0.1em;font-weight:700;text-transform:uppercase;">APUNTES HISTÓRICOS (JOURNALING)</div><div style="color:var(--text2);font-size:13px;margin-bottom:20px;padding:12px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border);">${t.notes}</div>`;
   }
   
   if(t.qualitative){
-    const qIds=['fQ1','fQ2','fQ3','fQ4','fQ5','fQ6','fQ7','fQ8','fQ9'];
-    notesContent += qIds.map((id,i)=>{
-      const v=t.qualitative[id];
-      return v ? `<div style="color:var(--gold2);font-family:'Space Mono',monospace;font-size:10px;margin-top:12px;margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;">${qLabels[i]}</div><div style="color:var(--text2);font-size:13px;margin-bottom:16px;">${v}</div>`:'';
+    const qKeys = Object.keys(qDict);
+    notesContent += qKeys.map(id => {
+      const v = t.qualitative[id];
+      return v ? `<div style="color:var(--gold2);font-family:'Space Mono',monospace;font-size:10px;margin-top:12px;margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;">${qDict[id]}</div><div style="color:var(--text2);font-size:13px;margin-bottom:16px;">${v}</div>` : '';
     }).filter(Boolean).join('');
   }
   document.getElementById('mNotes').innerHTML = notesContent || 'Sin notas ni registros.';
@@ -1418,24 +1423,22 @@ function renderAnalytics() {
 
 // ── BUILD QUALITATIVE QUESTIONS ──
 (function buildQualGrid() {
-  const questions = [
-    'Why did I take long or short?',
-    'Were my entry, stop, and target well-placed based on structure and liquidity?',
-    'Did I follow my trading plan and rules? If not, why?',
-    'What were my emotions before, during, and after the trade and did I rush?',
-    'What levels did price respect and was it the levels I had marked out?',
-    'What confluences did I enter off of?',
-    'Did the trade align with the session bias and market structure?',
-    'If there was a better setup, how could I have spotted this trade and taken it?',
-    'What\'s one thing I learned or want to do better in the next session?'
+  // Solo renderiza las preguntas que solicitaste para el Formulario Nuevo
+  const activeQuestions = [
+    { id: 'fQ10', text: '1st step, high time frame (1d or 4hr chart), intermediate time frame (15min or 5min chart, whatever the gap delivery was) and low time frame (1min chart) screenshot of the trade' },
+    { id: 'fQ11', text: '2nd htf dol, low tf dol, delivery, protected low/high, if the candles were good or bad (volume), bullish or bearish structure and lr.' },
+    { id: 'fQ2',  text: 'Were my entry, stop, and target well-placed based on structure and liquidity?' },
+    { id: 'fQ3',  text: 'Did I follow my trading plan and rules? If not, why?' },
+    { id: 'fQ4',  text: 'What were my emotions before, during, and after the trade and did I rush?' },
+    { id: 'fQ9',  text: 'What\'s one thing I learned or want to do better in the next session?' }
   ];
   function build() {
     const grid = document.getElementById('qualGrid');
     if (!grid) return;
-    grid.innerHTML = questions.map((q,i) => `
+    grid.innerHTML = activeQuestions.map(q => `
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <label for="fQ${i+1}" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:0.06em;text-transform:uppercase;">${q} <span style="color:var(--red)">*</span></label>
-        <textarea id="fQ${i+1}" rows="3" placeholder="..." style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;outline:none;resize:vertical;min-height:70px;width:100%;line-height:1.6;transition:border-color 0.2s;"></textarea>
+        <label for="${q.id}" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:0.06em;text-transform:uppercase;">${q.text} <span style="color:var(--red)">*</span></label>
+        <textarea id="${q.id}" rows="3" placeholder="..." style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;outline:none;resize:vertical;min-height:70px;width:100%;line-height:1.6;transition:border-color 0.2s;"></textarea>
       </div>
     `).join('');
     grid.querySelectorAll('textarea').forEach(ta => {
