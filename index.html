@@ -116,6 +116,10 @@
   .screenshot-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; padding: 0; border: none; }
   .screenshot-zone .hint { font-size: 11px; color: var(--text2); font-family: 'Space Mono', monospace; }
   .screenshot-preview { max-width: 100%; max-height: 200px; border-radius: 6px; object-fit: cover; display: none; }
+  
+  .tf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 10px; }
+  @media (max-width: 900px) { .tf-grid { grid-template-columns: 1fr !important; } }
+
   .rr-display { background: var(--gold-dim); border: 1px solid rgba(240,168,93,0.25); border-radius: var(--radius); padding: 10px 14px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--gold2); text-align: center; letter-spacing: 0.05em; }
   .form-divider { grid-column: 1 / -1; border: none; border-top: 1px solid var(--border); margin: 4px 0; }
   .upload-progress { display: none; background: var(--surface3); border-radius: var(--radius); padding: 8px 12px; font-family: 'Space Mono', monospace; font-size: 11px; color: var(--gold2); text-align: center; }
@@ -207,7 +211,7 @@
   /* MODAL */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
   .modal-overlay.open { display: flex; }
-  .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-lg); width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; animation: modalIn 0.2s ease; }
+  .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-lg); width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; animation: modalIn 0.2s ease; }
   @keyframes modalIn { from { opacity: 0; transform: scale(0.97) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
   .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
   .modal-body { padding: 24px; }
@@ -356,31 +360,85 @@
           </div>
           <div class="form-group full"><label>Profit / Pérdida (USD)</label><input type="number" id="fPnL" placeholder="Ej: 125.50 o -80.00" step="0.01"></div>
           <hr class="form-divider">
-          <div class="form-group full">
-            <label>Screenshot del Trade</label>
-            <div class="screenshot-zone">
-              <input type="file" accept="image/*" id="fScreenshot" onchange="previewShot(event)">
-              <img class="screenshot-preview" id="shotPreview">
-              <div style="font-size:24px" id="shotIcon">📷</div>
-              <div class="hint" id="shotHint">Click o arrastra una imagen aquí</div>
-            </div>
-            <div class="upload-progress" id="uploadProgress">
-              <span id="uploadText">Comprimiendo imagen...</span>
-              <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
-            </div>
+
+          <div class="upload-progress" id="uploadProgress">
+            <span id="uploadText">Comprimiendo imagen(es)...</span>
+            <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
           </div>
+          
           <div class="form-group full" id="quant-section" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:4px;">
 
-            <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:16px;">
-              <div style="display:flex;flex-direction:column;gap:6px;grid-column:1/-1;">
-                <label style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;">¿Sigue Bias de 4hr?</label>
-                <select id="fBias" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;outline:none;transition:border-color 0.2s;">
-                  <option value="">— Seleccionar —</option>
-                  <option value="aligned">Alineado con Bias</option>
-                  <option value="contrary">Contrario al Bias</option>
-                </select>
+            <!-- NUEVA ZONA DE IMÁGENES Y DATOS MULTI-TIMEFRAME -->
+            <div style="margin-bottom: 24px;">
+              <label style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;display:block;">Multi-Timeframe Analysis</label>
+              <div class="tf-grid">
+                
+                <!-- HTF -->
+                <div style="background:var(--surface2); padding:16px; border-radius:var(--radius); border:1px solid var(--border);">
+                    <div style="font-family:'Space Mono', monospace; font-size:10px; color:var(--gold2); margin-bottom:12px; text-transform:uppercase; font-weight:700;">High Time Frame (1D / 4H)</div>
+                    <div class="screenshot-zone" style="min-height:100px; padding:10px; margin-bottom:14px;">
+                      <input type="file" accept="image/*" id="fScreenshotHtf" onchange="previewShot(event, 'Htf')">
+                      <img class="screenshot-preview" id="shotPreviewHtf">
+                      <div style="font-size:20px" id="shotIconHtf">📷</div>
+                      <div class="hint" id="shotHintHtf">HTF Screenshot</div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <div><label style="font-size:9px">HTF DOL</label><input type="text" id="fHtfDol" style="padding:6px; font-size:11px;"></div>
+                        <div><label style="font-size:9px">Structure</label>
+                          <select id="fHtfStructure" style="padding:6px; font-size:11px;">
+                            <option value="">—</option><option value="Bullish">Bullish</option><option value="Bearish">Bearish</option>
+                          </select>
+                        </div>
+                        <div><label style="font-size:9px">Protected Low/High</label><input type="text" id="fHtfProtected" style="padding:6px; font-size:11px;"></div>
+                    </div>
+                </div>
+
+                <!-- ITF -->
+                <div style="background:var(--surface2); padding:16px; border-radius:var(--radius); border:1px solid var(--border);">
+                    <div style="font-family:'Space Mono', monospace; font-size:10px; color:var(--gold2); margin-bottom:12px; text-transform:uppercase; font-weight:700;">Intermediate (15M / 5M)</div>
+                    <div class="screenshot-zone" style="min-height:100px; padding:10px; margin-bottom:14px;">
+                      <input type="file" accept="image/*" id="fScreenshotItf" onchange="previewShot(event, 'Itf')">
+                      <img class="screenshot-preview" id="shotPreviewItf">
+                      <div style="font-size:20px" id="shotIconItf">📷</div>
+                      <div class="hint" id="shotHintItf">ITF Screenshot</div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <div><label style="font-size:9px">ITF DOL</label><input type="text" id="fItfDol" style="padding:6px; font-size:11px;"></div>
+                        <div><label style="font-size:9px">Structure</label>
+                          <select id="fItfStructure" style="padding:6px; font-size:11px;">
+                            <option value="">—</option><option value="Bullish">Bullish</option><option value="Bearish">Bearish</option>
+                          </select>
+                        </div>
+                        <div><label style="font-size:9px">Protected Low/High</label><input type="text" id="fItfProtected" style="padding:6px; font-size:11px;"></div>
+                    </div>
+                </div>
+
+                <!-- LTF -->
+                <div style="background:var(--surface2); padding:16px; border-radius:var(--radius); border:1px solid var(--border);">
+                    <div style="font-family:'Space Mono', monospace; font-size:10px; color:var(--gold2); margin-bottom:12px; text-transform:uppercase; font-weight:700;">Low Time Frame (1M)</div>
+                    <div class="screenshot-zone" style="min-height:100px; padding:10px; margin-bottom:14px;">
+                      <input type="file" accept="image/*" id="fScreenshotLtf" onchange="previewShot(event, 'Ltf')">
+                      <img class="screenshot-preview" id="shotPreviewLtf">
+                      <div style="font-size:20px" id="shotIconLtf">📷</div>
+                      <div class="hint" id="shotHintLtf">LTF Screenshot</div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <div><label style="font-size:9px">LTF DOL</label><input type="text" id="fLtfDol" style="padding:6px; font-size:11px;"></div>
+                        <div><label style="font-size:9px">Delivery</label><input type="text" id="fLtfDelivery" style="padding:6px; font-size:11px;"></div>
+                        <div><label style="font-size:9px">Protected High/Low</label><input type="text" id="fLtfProtected" style="padding:6px; font-size:11px;"></div>
+                        <div><label style="font-size:9px">Size of Candles (Vol)</label><input type="text" id="fLtfVolume" style="padding:6px; font-size:11px;"></div>
+                        <div><label style="font-size:9px">Structure</label>
+                          <select id="fLtfStructure" style="padding:6px; font-size:11px;">
+                            <option value="">—</option><option value="Bullish">Bullish</option><option value="Bearish">Bearish</option>
+                          </select>
+                        </div>
+                        <div><label style="font-size:9px">LR towards DOL</label><input type="text" id="fLtfLr" style="padding:6px; font-size:11px;"></div>
+                    </div>
+                </div>
+
               </div>
             </div>
+            <!-- FIN DE ZONA MTF -->
 
             <div style="margin-bottom:16px;">
               <label style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;display:block;">Señales Técnicas Identificadas</label>
@@ -571,7 +629,15 @@
       </div>
     </div>
     <div class="modal-body">
-      <img class="modal-screenshot" id="mScreenshot" style="display:none" onclick="openLightbox(this.src)">
+      
+      <!-- CONTENEDOR DINAMICO DE IMÁGENES -->
+      <div id="mImagesGrid" style="display:none; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0;">
+        <div><div style="font-family:'Space Mono'; font-size:10px; color:var(--gold2); margin-bottom:6px;">HTF</div><img id="mShotHtf" class="modal-screenshot" style="margin:0; width:100%; cursor:zoom-in;" onclick="openLightbox(this.src)"></div>
+        <div><div style="font-family:'Space Mono'; font-size:10px; color:var(--gold2); margin-bottom:6px;">ITF</div><img id="mShotItf" class="modal-screenshot" style="margin:0; width:100%; cursor:zoom-in;" onclick="openLightbox(this.src)"></div>
+        <div><div style="font-family:'Space Mono'; font-size:10px; color:var(--gold2); margin-bottom:6px;">LTF</div><img id="mShotLtf" class="modal-screenshot" style="margin:0; width:100%; cursor:zoom-in;" onclick="openLightbox(this.src)"></div>
+      </div>
+      <img class="modal-screenshot" id="mScreenshot" style="display:none" onclick="openLightbox(this.src)"> <!-- Fallback viejo -->
+
       <div class="detail-grid">
         <div class="detail-box"><div class="dlabel">Entrada</div><div class="dvalue gold" id="mEntry">—</div></div>
         <div class="detail-box"><div class="dlabel">Stop Loss</div><div class="dvalue red" id="mSL">—</div></div>
@@ -580,11 +646,14 @@
         <div class="detail-box"><div class="dlabel">R:R</div><div class="dvalue gold" id="mRR">—</div></div>
         <div class="detail-box"><div class="dlabel">P&L</div><div class="dvalue" id="mPnL">—</div></div>
       </div>
+
       <div style="margin-bottom:12px">
         <div id="mQuantGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px"></div>
+        <div id="mTfAnalysis" style="margin-bottom:16px;"></div> <!-- NUEVO: Muestra la info de HTF/ITF/LTF -->
         <div class="trade-notes-display" id="mNotes" style="font-size:12px;line-height:1.8;">Sin notas.</div>
       </div>
       
+      <!-- EDICIÓN AVANZADA DE DATOS -->
       <div id="editPanel" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
         <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold2);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px">✏️ Editar Datos del Trade</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
@@ -601,9 +670,35 @@
           <div><div class="dlabel" style="font-size:9px;color:var(--text3);margin-bottom:5px">MAE</div><input id="eMae" type="number" step="0.01" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:12px"></div>
           <div><div class="dlabel" style="font-size:9px;color:var(--text3);margin-bottom:5px">MFE</div><input id="eMfe" type="number" step="0.01" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:12px"></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-          <div><div class="dlabel" style="font-size:9px;color:var(--text3);margin-bottom:5px">Bias 4H</div><select id="eBias" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:12px"><option value="">—</option><option value="aligned">Alineado</option><option value="contrary">Contrario</option></select></div>
-          <div><div class="dlabel" style="font-size:9px;color:var(--text3);margin-bottom:5px">Gestión SL</div><input id="eSlMgmt" type="text" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:12px"></div>
+        
+        <!-- EDICIÓN DE MTF EN MODAL -->
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold2);letter-spacing:0.12em;text-transform:uppercase;margin:18px 0 10px;">✏️ Editar Multi-Timeframe Analysis</div>
+        <div class="tf-grid" style="margin-bottom:14px;">
+            <div style="background:var(--surface2); padding:10px; border-radius:var(--radius); border:1px solid var(--border); display:flex; flex-direction:column; gap:6px;">
+                <div style="color:var(--gold); font-size:9px;">HTF</div>
+                <div><label style="font-size:8px">DOL</label><input type="text" id="eHtfDol" style="padding:4px; font-size:11px;"></div>
+                <div><label style="font-size:8px">Struct</label><select id="eHtfStructure" style="padding:4px; font-size:11px;"><option value="">—</option><option value="Bullish">Bullish</option><option value="Bearish">Bearish</option></select></div>
+                <div><label style="font-size:8px">Protected</label><input type="text" id="eHtfProtected" style="padding:4px; font-size:11px;"></div>
+            </div>
+            <div style="background:var(--surface2); padding:10px; border-radius:var(--radius); border:1px solid var(--border); display:flex; flex-direction:column; gap:6px;">
+                <div style="color:var(--gold); font-size:9px;">ITF</div>
+                <div><label style="font-size:8px">DOL</label><input type="text" id="eItfDol" style="padding:4px; font-size:11px;"></div>
+                <div><label style="font-size:8px">Struct</label><select id="eItfStructure" style="padding:4px; font-size:11px;"><option value="">—</option><option value="Bullish">Bullish</option><option value="Bearish">Bearish</option></select></div>
+                <div><label style="font-size:8px">Protected</label><input type="text" id="eItfProtected" style="padding:4px; font-size:11px;"></div>
+            </div>
+            <div style="background:var(--surface2); padding:10px; border-radius:var(--radius); border:1px solid var(--border); display:flex; flex-direction:column; gap:6px;">
+                <div style="color:var(--gold); font-size:9px;">LTF</div>
+                <div><label style="font-size:8px">DOL</label><input type="text" id="eLtfDol" style="padding:4px; font-size:11px;"></div>
+                <div><label style="font-size:8px">Struct</label><select id="eLtfStructure" style="padding:4px; font-size:11px;"><option value="">—</option><option value="Bullish">Bullish</option><option value="Bearish">Bearish</option></select></div>
+                <div><label style="font-size:8px">Protected</label><input type="text" id="eLtfProtected" style="padding:4px; font-size:11px;"></div>
+                <div><label style="font-size:8px">Delivery</label><input type="text" id="eLtfDelivery" style="padding:4px; font-size:11px;"></div>
+                <div><label style="font-size:8px">Vol (Candles)</label><input type="text" id="eLtfVolume" style="padding:4px; font-size:11px;"></div>
+                <div><label style="font-size:8px">LR</label><input type="text" id="eLtfLr" style="padding:4px; font-size:11px;"></div>
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:10px">
+          <div><div class="dlabel" style="font-size:9px;color:var(--text3);margin-bottom:5px">Gestión SL during trades</div><input id="eSlMgmt" type="text" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:12px"></div>
         </div>
         <div style="margin-bottom:14px">
           <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Apuntes Históricos (Notas)</div>
@@ -672,7 +767,13 @@ let direction = 'long';
 let result = 'win';
 let currentFilter = 'all';
 let currentTradeId = null;
-let screenshotFile = null;
+
+// LÓGICA DE MÚLTIPLES SCREENSHOTS
+let screenshotFileHtf = null;
+let screenshotFileItf = null;
+let screenshotFileLtf = null;
+let screenshotFileFallback = null;
+
 let unsubscribe = null;
 let calYear = new Date().getFullYear();
 let calMonth = new Date().getMonth();
@@ -715,25 +816,22 @@ function initRealtime() {
   });
 }
 
-// Set default date
 const now = new Date();
 now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
 document.getElementById('fDate').value = now.toISOString().slice(0,16);
 
 function setSyncStatus(s, t) { document.getElementById('syncDot').className = 'sync-dot ' + s; document.getElementById('syncText').textContent = t; }
 
-// ── TABS ──
 window._switchTab = (tab, btn) => {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   btn.classList.add('active');
-  if (tab === 'equity') { renderEquity(); }
+  if (tab === 'equity') renderEquity();
   if (tab === 'calendar') renderCalendar();
   if (tab === 'analytics') renderAnalytics();
 };
 
-// ── FORM ──
 window._setDir = (d) => { direction = d; document.getElementById('btnLong').classList.toggle('active', d==='long'); document.getElementById('btnShort').classList.toggle('active', d==='short'); };
 window._setResult = (r) => { result = r; ['Win','Loss','BE'].forEach(x => { const k = x==='BE'?'be':x.toLowerCase(); document.getElementById('btn'+x).classList.toggle('active', k===r); }); };
 
@@ -748,11 +846,30 @@ window._calcRR = () => {
   el.textContent = `R:R Planeado = 1 : ${(reward/risk).toFixed(2)}`;
 };
 
-window._previewShot = (e) => {
-  screenshotFile = e.target.files[0]; if (!screenshotFile) return;
+window._previewShot = (e, tf) => {
+  const file = e.target.files[0]; 
+  if (!file) return;
+  
+  if (tf === 'Htf') screenshotFileHtf = file;
+  else if (tf === 'Itf') screenshotFileItf = file;
+  else if (tf === 'Ltf') screenshotFileLtf = file;
+  else screenshotFileFallback = file; // legacy
+
   const reader = new FileReader();
-  reader.onload = ev => { document.getElementById('shotPreview').src=ev.target.result; document.getElementById('shotPreview').style.display='block'; document.getElementById('shotIcon').style.display='none'; document.getElementById('shotHint').style.display='none'; };
-  reader.readAsDataURL(screenshotFile);
+  reader.onload = ev => { 
+    if(tf) {
+        document.getElementById('shotPreview'+tf).src=ev.target.result; 
+        document.getElementById('shotPreview'+tf).style.display='block'; 
+        document.getElementById('shotIcon'+tf).style.display='none'; 
+        document.getElementById('shotHint'+tf).style.display='none';
+    } else {
+        document.getElementById('shotPreview').src=ev.target.result; 
+        document.getElementById('shotPreview').style.display='block'; 
+        document.getElementById('shotIcon').style.display='none'; 
+        document.getElementById('shotHint').style.display='none';
+    }
+  };
+  reader.readAsDataURL(file);
 };
 
 function compressImage(file) {
@@ -801,19 +918,20 @@ window._saveTrade = async () => {
       if (durationMin < 0) durationMin += 24 * 60;
   }
 
-  const bias = document.getElementById('fBias').value;
   const slMgmtReal = document.getElementById('fSlManagementReal').value;
   const techSignals = Array.from(document.querySelectorAll('#fTechSignals input:checked')).map(cb => cb.value);
 
-  let screenshotBase64 = null;
-  if (screenshotFile) { try { screenshotBase64 = await compressImage(screenshotFile); } catch(err) {} }
+  let screenshotHtfBase64 = null, screenshotItfBase64 = null, screenshotLtfBase64 = null, screenshotBase64 = null;
+  if (screenshotFileHtf) { try { screenshotHtfBase64 = await compressImage(screenshotFileHtf); } catch(err) {} }
+  if (screenshotFileItf) { try { screenshotItfBase64 = await compressImage(screenshotFileItf); } catch(err) {} }
+  if (screenshotFileLtf) { try { screenshotLtfBase64 = await compressImage(screenshotFileLtf); } catch(err) {} }
+  if (screenshotFileFallback) { try { screenshotBase64 = await compressImage(screenshotFileFallback); } catch(err) {} }
   
   try {
     setSyncStatus('syncing','Guardando...');
     
-    // AQUÍ SE GUARDAN TODOS LOS IDs (Viejos y nuevos, para que no falle nada)
     const qualData = {};
-    const qIds = ['fQ1','fQ2','fQ3','fQ4','fQ5','fQ6','fQ7','fQ8','fQ9','fQ10','fQ11'];
+    const qIds = ['fQ2','fQ3','fQ4','fQ9'];
     qIds.forEach(id => { const el=document.getElementById(id); qualData[id]=el?el.value.trim():''; });
     
     await addDoc(tradesCol, {
@@ -825,22 +943,49 @@ window._saveTrade = async () => {
       lots: parseFloat(document.getElementById('fLots').value)||null,
       pnl: parseFloat(document.getElementById('fPnL').value)||0,
       result, rr,
-      bias: bias,
+      
+      // Nuevos campos MTF
+      htfDol: document.getElementById('fHtfDol').value,
+      htfStructure: document.getElementById('fHtfStructure').value,
+      htfProtected: document.getElementById('fHtfProtected').value,
+      itfDol: document.getElementById('fItfDol').value,
+      itfStructure: document.getElementById('fItfStructure').value,
+      itfProtected: document.getElementById('fItfProtected').value,
+      ltfDol: document.getElementById('fLtfDol').value,
+      ltfStructure: document.getElementById('fLtfStructure').value,
+      ltfProtected: document.getElementById('fLtfProtected').value,
+      ltfDelivery: document.getElementById('fLtfDelivery').value,
+      ltfVolume: document.getElementById('fLtfVolume').value,
+      ltfLr: document.getElementById('fLtfLr').value,
+
       slMgmtReal: slMgmtReal,
       techSignals: techSignals,
-      screenshotBase64,
+      
+      screenshotHtfBase64,
+      screenshotItfBase64,
+      screenshotLtfBase64,
+      screenshotBase64, // Legacy resguardo
+      
       mae: parseFloat(document.getElementById('fMae')?.value)||null,
       mfe: parseFloat(document.getElementById('fMfe')?.value)||null,
       qualitative: qualData,
       timestamp: Date.now()
     });
 
-    ['fEntry','fSL','fTP','fLots','fPnL','fExitTime','fBias','fSlManagementReal','fMae','fMfe'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['fEntry','fSL','fTP','fLots','fPnL','fExitTime','fSlManagementReal','fMae','fMfe',
+     'fHtfDol','fHtfStructure','fHtfProtected',
+     'fItfDol','fItfStructure','fItfProtected',
+     'fLtfDol','fLtfStructure','fLtfProtected','fLtfDelivery','fLtfVolume','fLtfLr'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     document.querySelectorAll('#fTechSignals input').forEach(cb => cb.checked = false);
     qIds.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     
-    screenshotFile=null;
-    document.getElementById('shotPreview').style.display='none'; document.getElementById('shotIcon').style.display='block'; document.getElementById('shotHint').style.display='block';
+    screenshotFileHtf = null; screenshotFileItf = null; screenshotFileLtf = null; screenshotFileFallback = null;
+    ['Htf','Itf','Ltf'].forEach(tf => {
+      document.getElementById('shotPreview'+tf).style.display='none'; 
+      document.getElementById('shotIcon'+tf).style.display='block'; 
+      document.getElementById('shotHint'+tf).style.display='block';
+    });
+
     document.getElementById('rrDisplay').textContent='R:R — ingresa entrada, SL y TP para calcular';
     setDir('long'); setResult('win'); window.resetEfficiency && window.resetEfficiency();
     btn.textContent='✓ GUARDADO'; btn.style.background='linear-gradient(135deg,var(--green),#00b87a)';
@@ -874,9 +1019,8 @@ function updateStats() {
   
   const wins = trades.filter(t=>t.result==='win').length;
   const losses = trades.filter(t=>t.result==='loss').length;
-  const pureTrades = wins + losses; // Excluimos BE del divisor
+  const pureTrades = wins + losses;
   
-  // Cálculo puro del Win Rate
   const wr = pureTrades > 0 ? ((wins/pureTrades)*100).toFixed(0) : 0;
   
   const total = trades.reduce((a,t)=>a+(t.pnl||0),0);
@@ -884,7 +1028,7 @@ function updateStats() {
   const avgRR = rrs.length ? (rrs.reduce((a,b)=>a+b,0)/rrs.length).toFixed(2) : null;
   const best = Math.max(...trades.map(t=>t.pnl||0));
   
-  document.getElementById('statTotal').textContent = trades.length; // Los BE siguen sumando al volumen
+  document.getElementById('statTotal').textContent = trades.length; 
   
   const wrEl = document.getElementById('statWR');
   wrEl.textContent = pureTrades > 0 ? wr+'%' : '—';
@@ -1100,36 +1244,85 @@ window._openTradeModal = (id) => {
   document.getElementById('mLots').textContent=t.lots||'—';
   document.getElementById('mRR').textContent=t.rr ? '1:'+t.rr : '—';
   
+  // RENDER DE IMÁGENES
+  const mGrid = document.getElementById('mImagesGrid');
+  const sHtf = document.getElementById('mShotHtf');
+  const sItf = document.getElementById('mShotItf');
+  const sLtf = document.getElementById('mShotLtf');
+  const oldShot = document.getElementById('mScreenshot');
+
+  if(t.screenshotHtfBase64 || t.screenshotItfBase64 || t.screenshotLtfBase64) {
+      mGrid.style.display = 'grid';
+      oldShot.style.display = 'none';
+      if(t.screenshotHtfBase64){ sHtf.src = t.screenshotHtfBase64; sHtf.parentElement.style.display='block'; } else sHtf.parentElement.style.display='none';
+      if(t.screenshotItfBase64){ sItf.src = t.screenshotItfBase64; sItf.parentElement.style.display='block'; } else sItf.parentElement.style.display='none';
+      if(t.screenshotLtfBase64){ sLtf.src = t.screenshotLtfBase64; sLtf.parentElement.style.display='block'; } else sLtf.parentElement.style.display='none';
+  } else if(t.screenshotBase64) {
+      mGrid.style.display = 'none';
+      oldShot.src = t.screenshotBase64;
+      oldShot.style.display = 'block';
+  } else {
+      mGrid.style.display = 'none';
+      oldShot.style.display = 'none';
+  }
+
+  // RENDER DE DATOS PRINCIPALES
   const qg = document.getElementById('mQuantGrid');
   if(qg){
-    const biasName = t.bias === 'aligned' ? 'Alineado' : t.bias === 'contrary' ? 'Contrario' : (t.bias || 'No registrado');
-    const signals = (t.techSignals && t.techSignals.length > 0) ? t.techSignals.join(', ') : (t.setupType || 'No registrado');
-    const slMgmt = t.slMgmtReal || t.slManagement || 'No registrado';
-    const dur = t.durationMin != null ? `${t.durationMin} min` : 'No registrada';
-
-    qg.innerHTML=[
-      {l:'Bias 4H',v:biasName},
-      {l:'Duración',v:dur},
-      {l:'Gestión SL',v:slMgmt},
-      {l:'Señales',v:signals},
-    ].map(x=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px"><div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">${x.l}</div><div style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--gold2)">${x.v}</div></div>`).join('');
+    const arr = [];
+    if(t.bias) arr.push({l:'Bias 4H', v: t.bias === 'aligned' ? 'Alineado' : t.bias === 'contrary' ? 'Contrario' : t.bias}); // Legacy persistente
+    arr.push({l:'Duración', v: t.durationMin != null ? `${t.durationMin} min` : 'No registrada'});
+    arr.push({l:'Gestión SL', v: t.slMgmtReal || t.slManagement || 'No registrado'});
+    arr.push({l:'Señales', v: (t.techSignals && t.techSignals.length > 0) ? t.techSignals.join(', ') : (t.setupType || 'No registrado')});
+    
+    qg.innerHTML= arr.map(x=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px"><div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">${x.l}</div><div style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--gold2)">${x.v}</div></div>`).join('');
   }
-  
+
+  // RENDER MULTI-TIMEFRAME ANALYSIS
+  let tfHtml = '';
+  if (t.htfDol || t.itfDol || t.ltfDol) {
+      tfHtml += `<div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold2);letter-spacing:0.1em;text-transform:uppercase;margin:18px 0 10px;">MULTI-TIMEFRAME ANALYSIS</div>
+      <div class="tf-grid" style="margin-bottom:16px;">`;
+      
+      tfHtml += `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:8px;">HTF</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.6"><span style="color:var(--text3)">DOL:</span> ${t.htfDol||'—'}</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.6"><span style="color:var(--text3)">Struct:</span> ${t.htfStructure||'—'}</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.6"><span style="color:var(--text3)">Prot L/H:</span> ${t.htfProtected||'—'}</div>
+      </div>`;
+
+      tfHtml += `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:8px;">ITF</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.6"><span style="color:var(--text3)">DOL:</span> ${t.itfDol||'—'}</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.6"><span style="color:var(--text3)">Struct:</span> ${t.itfStructure||'—'}</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.6"><span style="color:var(--text3)">Prot L/H:</span> ${t.itfProtected||'—'}</div>
+      </div>`;
+
+      tfHtml += `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:8px;">LTF</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.6"><span style="color:var(--text3)">DOL:</span> ${t.ltfDol||'—'}</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.6"><span style="color:var(--text3)">Deliv:</span> ${t.ltfDelivery||'—'}</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.6"><span style="color:var(--text3)">Prot H/L:</span> ${t.ltfProtected||'—'}</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.6"><span style="color:var(--text3)">Vol:</span> ${t.ltfVolume||'—'}</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.6"><span style="color:var(--text3)">Struct:</span> ${t.ltfStructure||'—'}</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.6"><span style="color:var(--text3)">LR:</span> ${t.ltfLr||'—'}</div>
+      </div>`;
+
+      tfHtml += `</div>`;
+  }
+  document.getElementById('mTfAnalysis').innerHTML = tfHtml;
+
   const pe=document.getElementById('mPnL');
   pe.textContent=(t.pnl>=0?'+':'')+'$'+(t.pnl||0).toFixed(2);
   pe.className='dvalue '+(t.pnl>0?'green':t.pnl<0?'red':'');
-  const shot=document.getElementById('mScreenshot');
-  if(t.screenshotBase64){shot.src=t.screenshotBase64;shot.style.display='block';}else{shot.style.display='none';}
   
-  // DICCIONARIO DE PREGUNTAS (Respeta los IDs históricos y asigna los nuevos)
+  // DICCIONARIO CUALITATIVO
   const qDict = {
-    fQ10: '1st step, high time frame (1d or 4hr chart), intermediate time frame (15min or 5min chart, whatever the gap delivery was) and low time frame (1min chart) screenshot of the trade',
-    fQ11: '2nd htf dol, low tf dol, delivery, protected low/high, if the candles were good or bad (volume), bullish or bearish structure and lr.',
     fQ2: 'Were my entry, stop, and target well-placed based on structure and liquidity?',
     fQ3: 'Did I follow my trading plan and rules? If not, why?',
     fQ4: 'What were my emotions before, during, and after the trade and did I rush?',
     fQ9: 'What\'s one thing I learned or want to do better in the next session?',
-    // Estos quedan guardados por si abres un trade de hace meses que las tenía respondidas
+    // Resguardo Histórico:
     fQ1: 'Why did I take long or short?',
     fQ5: 'What levels did price respect and was it the levels I had marked out?',
     fQ6: 'What confluences did I enter off of?',
@@ -1153,6 +1346,7 @@ window._openTradeModal = (id) => {
   
   document.getElementById('modalOverlay').classList.add('open');
 };
+
 window._closeModal = (e) => { if(e.target===document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('open'); };
 
 window._toggleEditMode = () => {
@@ -1173,9 +1367,23 @@ window._toggleEditMode = () => {
   document.getElementById('eLots').value = t.lots || '';
   document.getElementById('eMae').value = t.mae || '';
   document.getElementById('eMfe').value = t.mfe || '';
-  document.getElementById('eBias').value = t.bias || '';
   document.getElementById('eSlMgmt').value = t.slMgmtReal || '';
   document.getElementById('eNotes').value = t.notes || '';
+
+  document.getElementById('eHtfDol').value = t.htfDol || '';
+  document.getElementById('eHtfStructure').value = t.htfStructure || '';
+  document.getElementById('eHtfProtected').value = t.htfProtected || '';
+  
+  document.getElementById('eItfDol').value = t.itfDol || '';
+  document.getElementById('eItfStructure').value = t.itfStructure || '';
+  document.getElementById('eItfProtected').value = t.itfProtected || '';
+
+  document.getElementById('eLtfDol').value = t.ltfDol || '';
+  document.getElementById('eLtfStructure').value = t.ltfStructure || '';
+  document.getElementById('eLtfProtected').value = t.ltfProtected || '';
+  document.getElementById('eLtfDelivery').value = t.ltfDelivery || '';
+  document.getElementById('eLtfVolume').value = t.ltfVolume || '';
+  document.getElementById('eLtfLr').value = t.ltfLr || '';
   
   panel.style.display = 'block';
 };
@@ -1219,9 +1427,21 @@ window._saveEditTrade = async () => {
     lots: parseFloat(document.getElementById('eLots').value)||null,
     mae: parseFloat(document.getElementById('eMae').value)||null,
     mfe: parseFloat(document.getElementById('eMfe').value)||null,
-    bias: document.getElementById('eBias').value,
     slMgmtReal: document.getElementById('eSlMgmt').value,
     notes: document.getElementById('eNotes').value,
+    
+    htfDol: document.getElementById('eHtfDol').value,
+    htfStructure: document.getElementById('eHtfStructure').value,
+    htfProtected: document.getElementById('eHtfProtected').value,
+    itfDol: document.getElementById('eItfDol').value,
+    itfStructure: document.getElementById('eItfStructure').value,
+    itfProtected: document.getElementById('eItfProtected').value,
+    ltfDol: document.getElementById('eLtfDol').value,
+    ltfStructure: document.getElementById('eLtfStructure').value,
+    ltfProtected: document.getElementById('eLtfProtected').value,
+    ltfDelivery: document.getElementById('eLtfDelivery').value,
+    ltfVolume: document.getElementById('eLtfVolume').value,
+    ltfLr: document.getElementById('eLtfLr').value
   };
   
   await updateDoc(doc(db,'trades',currentTradeId), updated);
@@ -1423,10 +1643,7 @@ function renderAnalytics() {
 
 // ── BUILD QUALITATIVE QUESTIONS ──
 (function buildQualGrid() {
-  // Solo renderiza las preguntas que solicitaste para el Formulario Nuevo
   const activeQuestions = [
-    { id: 'fQ10', text: '1st step, high time frame (1d or 4hr chart), intermediate time frame (15min or 5min chart, whatever the gap delivery was) and low time frame (1min chart) screenshot of the trade' },
-    { id: 'fQ11', text: '2nd htf dol, low tf dol, delivery, protected low/high, if the candles were good or bad (volume), bullish or bearish structure and lr.' },
     { id: 'fQ2',  text: 'Were my entry, stop, and target well-placed based on structure and liquidity?' },
     { id: 'fQ3',  text: 'Did I follow my trading plan and rules? If not, why?' },
     { id: 'fQ4',  text: 'What were my emotions before, during, and after the trade and did I rush?' },
